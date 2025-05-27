@@ -3,8 +3,10 @@
 import { z } from "zod";
 import { db } from "@/db/db";
 import { users, cars } from "@/db/schema";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 const carActionSchema = z.object({
   driverId: z.number(),
@@ -19,9 +21,25 @@ const carActionSchema = z.object({
 type CarComfort = "standard" | "premium" | "luxury";
 
 export async function createCar(formData: z.infer<typeof carActionSchema>) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user) {
+    return { error: "Unauthorized" };
+  }
+
   const validatedFields = carActionSchema.safeParse(formData);
   if (!validatedFields.success) {
     return { error: "Invalid fields", details: validatedFields.error.flatten() };
+  }
+
+  const canCreateAnyCar = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { car: ["create"] } } });
+
+  if (!canCreateAnyCar?.granted) {
+    // Not an admin, check if driver is creating for themselves
+    // @ts-ignore TODO: fix user type from session to include role
+    const isDriver = session.user.role === 'driver';
+    if (!(isDriver && String(validatedFields.data.driverId) === session.user.id)) {
+      return { error: "Forbidden: You do not have permission to create this car." };
+    }
   }
 
   try {
@@ -47,9 +65,33 @@ export async function createCar(formData: z.infer<typeof carActionSchema>) {
 }
 
 export async function updateCar(carId: number, formData: z.infer<typeof carActionSchema>) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user) {
+    return { error: "Unauthorized" };
+  }
+
   const validatedFields = carActionSchema.safeParse(formData);
   if (!validatedFields.success) {
     return { error: "Invalid fields", details: validatedFields.error.flatten() };
+  }
+
+  const canUpdateAnyCar = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { car: ["update"] } } });
+
+  if (!canUpdateAnyCar?.granted) {
+    // Not an admin, check if driver is updating their own car
+    const carToUpdateResult = await db.select().from(cars).where(eq(cars.id, carId)).limit(1);
+    if (!carToUpdateResult[0]) {
+      return { error: "Car not found." };
+    }
+    const carToUpdate = carToUpdateResult[0];
+
+    // @ts-ignore TODO: fix user type from session to include role
+    const isDriver = session.user.role === 'driver';
+    if (!(isDriver && 
+          String(carToUpdate.driverId) === session.user.id && 
+          String(validatedFields.data.driverId) === session.user.id)) {
+      return { error: "Forbidden: You do not have permission to update this car or change its driver." };
+    }
   }
 
   try {
@@ -102,5 +144,37 @@ export async function getCarsAction() {
   } catch (error) {
     console.error("Error fetching cars:", error);
     return { success: false, error: "Database error: Failed to fetch cars." };
+  }
+}
+
+export async function deleteCar(carId: number) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user) {
+    return { error: "Unauthorized" };
+  }
+
+  const canDeleteAnyCar = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { car: ["delete"] } } });
+
+  if (!canDeleteAnyCar?.granted) {
+    // Not an admin, check if driver is deleting their own car
+    const carToDeleteResult = await db.select().from(cars).where(eq(cars.id, carId)).limit(1);
+    if (!carToDeleteResult[0]) {
+      return { error: "Car not found." };
+    }
+    const carToDelete = carToDeleteResult[0];
+    // @ts-ignore TODO: fix user type from session to include role
+    const isDriver = session.user.role === 'driver';
+    if (!(isDriver && String(carToDelete.driverId) === session.user.id)) {
+      return { error: "Forbidden: You do not have permission to delete this car." };
+    }
+  }
+
+  try {
+    await db.delete(cars).where(eq(cars.id, carId)).execute();
+    revalidatePath("/dashboard/cars");
+    return { success: "Car deleted successfully." };
+  } catch (error) {
+    console.error("Error deleting car:", error);
+    return { error: "Database error: Failed to delete car." };
   }
 }

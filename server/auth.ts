@@ -2,6 +2,9 @@
 
 import { auth } from "@/lib/auth";
 
+// Re-export the auth instance for the CLI to pick up
+export { auth };
+
 export const LogIn = async (email: string, password: string) => {
     try {
         const response = await auth.api.signInEmail({

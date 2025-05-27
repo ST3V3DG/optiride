@@ -9,6 +9,7 @@ import { CarWithDriverName } from "@/lib/types";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NavUserProps } from "@/lib/types";
+import { redirect } from "next/navigation";
 
 async function getCar(id: string): Promise<CarWithDriverName | null> {
   try {
@@ -45,10 +46,16 @@ export default async function Page({ params }: { params: { id: string } }) {
     image: session?.user?.image || null,
   };
 
+  if (!session) {
+    redirect('/login');
+  }
+  // It's important to check if car exists before trying to access its properties for auth checks
   if (!car) {
-    return (
+    // Render the existing not found UI; no redirect needed here as session is valid
+    // but the specific resource is not found.
+    return ( // Copied from existing !car block below, but ensuring session data is passed to sidebar
       <SidebarProvider>
-        <AppSidebar user={userProps} />
+        <AppSidebar user={userProps} /> 
         <SidebarInset>
           <PageHeader
             title="Car Not Found"
@@ -64,6 +71,24 @@ export default async function Page({ params }: { params: { id: string } }) {
         </SidebarInset>
       </SidebarProvider>
     );
+  }
+
+  const canUpdateCar = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { car: ["update"] } } });
+
+  if (canUpdateCar?.granted) {
+    // Admin with permission can edit any car.
+    // If user is a driver, they must own the car.
+    // @ts-ignore session.user.id should be string for comparison if car.driverId is string
+    if (session.user?.role === 'driver' && String(car.driverId) !== session.user.id) {
+      redirect('/dashboard/cars'); // Forbidden, not their car
+    }
+    // If user is 'user' (client), they cannot edit cars based on current permissions.
+    else if (session.user?.role === 'user') {
+       redirect('/dashboard/cars'); // Forbidden
+    }
+  } else {
+    // No general 'update' permission
+    redirect('/dashboard/cars'); // Forbidden
   }
 
   return (

@@ -4,7 +4,8 @@ import { db } from "@/db/db";
 import { schema } from "@/db/schema";
 import { nextCookies } from "better-auth/next-js";
 import { sendEmail } from "@/server/email";
-import { openAPI } from "better-auth/plugins";
+import { openAPI, organization } from "better-auth/plugins";
+import { ac, allRoles } from "@/lib/permissions";
  
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -32,6 +33,6 @@ export const auth = betterAuth({
       generateId: false,
     },
   },
-  plugins: [nextCookies(), openAPI()]
+  plugins: [nextCookies(), openAPI(), organization({ ac, roles: allRoles })]
 });
 

@@ -10,6 +10,7 @@ import { PageHeader } from "@/components/page-header";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NavUserProps } from "@/lib/types";
+import { redirect } from "next/navigation";
 
 async function getUser(id: string): Promise<User | undefined> {
   try {
@@ -40,6 +41,15 @@ export default async function Page({ params }: { params: { id: string } }) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
+
+  if (!session) {
+    redirect('/login'); // Or your appropriate login page
+  }
+  // Check permission to update users
+  const canUpdateUsers = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["update"] } } });
+  if (!canUpdateUsers?.granted) {
+    redirect('/dashboard'); // Or an access denied page
+  }
 
   const userProps: NavUserProps = {
     id: session?.user?.id || null,

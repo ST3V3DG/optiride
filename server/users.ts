@@ -21,6 +21,15 @@ const userActionSchema = z.object({
 });
 
 export async function createUser(formData: z.infer<typeof userActionSchema>) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) {
+    return { error: "Unauthorized" };
+  }
+  const canCreate = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["create"] } } });
+  if (!canCreate?.granted) {
+    return { error: "Forbidden: You do not have permission to create users." };
+  }
+
   const validatedFields = userActionSchema.safeParse(formData);
   if (!validatedFields.success) {
     return { error: "Invalid fields", details: validatedFields.error.flatten() };
@@ -42,7 +51,18 @@ export async function createUser(formData: z.infer<typeof userActionSchema>) {
 }
 
 export async function updateUser(userId: string, formData: z.infer<typeof userActionSchema>) { 
-   const validatedFields = userActionSchema.safeParse(formData);
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) {
+    return { error: "Unauthorized" };
+  }
+  const canUpdate = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["update"] } } });
+  if (!canUpdate?.granted) {
+    // For now, strictly checking admin permission for this generic update function.
+    // A separate updateProfile function could handle self-updates with different logic if needed.
+    return { error: "Forbidden: You do not have permission to update users." };
+  }
+
+  const validatedFields = userActionSchema.safeParse(formData);
   if (!validatedFields.success) {
     return { error: "Invalid fields", details: validatedFields.error.flatten() };
   }
@@ -67,6 +87,15 @@ export async function updateUser(userId: string, formData: z.infer<typeof userAc
 }
 
 export async function toggleProfileValidation(id: string, validationStatus: boolean) { 
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) {
+    return { error: "Unauthorized" };
+  }
+  const canValidate = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["update"] } } });
+  if (!canValidate?.granted) {
+    return { error: "Forbidden: You do not have permission to change user validation status." };
+  }
+
   try {
     await db
       .update(users)
@@ -101,11 +130,22 @@ export async function uploadProfilePicture(formData: FormData, userId?: string |
   });
   const authUser = session?.user;
   if (!authUser) {
-    return { error: "Utilisateur non authentifié" };
+    return { error: "Utilisateur non authentifié" }; // Existing check for basic authentication
   }
 
-  userId = userId ? userId : authUser.id;
-  
+  const targetUserId = userId ? userId : authUser.id;
+
+  // If userId is provided and it's different from the authenticated user's ID,
+  // it means an admin might be trying to change another user's picture.
+  if (userId && userId !== authUser.id) {
+    const canUpdateOther = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["update"] } } });
+    if (!canUpdateOther?.granted) {
+      return { error: "Forbidden: You do not have permission to update other users' profile pictures." };
+    }
+  }
+  // If userId is not provided or userId === authUser.id, the user is updating their own picture.
+  // This is generally allowed for any authenticated user.
+
   const file = formData.get("profilePicture") as File;
   if (!file) {
     return { error: "Aucun fichier sélectionné" };
@@ -144,9 +184,9 @@ export async function uploadProfilePicture(formData: FormData, userId?: string |
     await db
       .update(users)
       .set({ image: fileUrl })
-      .where(eq(users.id, Number(userId)));
+      .where(eq(users.id, Number(targetUserId))); // Use targetUserId here
     
-    revalidatePath(`${'/dashboard/user/' + userId}`);
+    revalidatePath(`${'/dashboard/user/' + targetUserId}`); // Use targetUserId here
 
     return { success: true, fileUrl };
   } catch (error) {

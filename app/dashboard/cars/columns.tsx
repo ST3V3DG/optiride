@@ -14,6 +14,9 @@ import Link from "next/link";
 import { Checkbox } from "@/components/ui/checkbox";
 import DeleteButton from "@/components/delete-button";
 import { CarWithDriverName } from "@/lib/types";
+import { authClient } from "@/lib/auth-client";
+// Assuming better-auth provides useSession through authClient
+// If it's from "next-auth/react", that would be: import { useSession } from "next-auth/react";
 
 export const getColumns = (
   setData: React.Dispatch<React.SetStateAction<CarWithDriverName[]>>
@@ -178,6 +181,24 @@ export const getColumns = (
     header: () => <div className="text-left">Action</div>,
     id: "actions",
     cell: ({ row }) => {
+      const { data: session } = authClient.useSession(); 
+      // Note: Adjust session.user.id and session.user.role if better-auth nests these differently
+      // e.g., session.user.databaseId or session.user.activeOrganizationRole
+      const currentUserId = session?.user?.id; 
+      const currentUserRole = session?.user?.role; 
+
+      const isOwner = String(row.original.driverId) === String(currentUserId);
+
+      // Check general permission for the action first
+      const canUpdate = authClient.organization.checkRolePermission({ permissions: { car: ["update"] } });
+      const canDelete = authClient.organization.checkRolePermission({ permissions: { car: ["delete"] } });
+
+      // Determine if the edit/delete button should be shown
+      // Admin can edit/delete if they have the permission.
+      // Driver can edit/delete if they have the permission AND are the owner.
+      const showEditButton = canUpdate && (currentUserRole === 'admin' || (currentUserRole === 'driver' && isOwner));
+      const showDeleteButton = canDelete && (currentUserRole === 'admin' || (currentUserRole === 'driver' && isOwner));
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -198,30 +219,34 @@ export const getColumns = (
                 Details
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link
-                className="w-full"
-                href={`/dashboard/cars/${row.original.id}/edit`}
+            {showEditButton && (
+              <DropdownMenuItem asChild>
+                <Link
+                  className="w-full"
+                  href={`/dashboard/cars/${row.original.id}/edit`}
+                >
+                  Edit
+                </Link>
+              </DropdownMenuItem>
+            )}
+            {showDeleteButton && (
+              <DropdownMenuItem
+                onSelect={(e) => e.preventDefault()}
+                className="p-0 focus:bg-transparent"
               >
-                Edit
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onSelect={(e) => e.preventDefault()}
-              className="p-0 focus:bg-transparent"
-            >
-              <DeleteButton
-                className="w-full font-normal hover:bg-red-500 hover:text-white justify-start px-2 mb-1 py-1.5 h-auto rounded-sm hover:no-underline cursor-pointer"
-                variant="link"
-                collectionName="cars"
-                id={Number(row.original.id)}
-                onDelete={(id) => {
-                  setData((prevData) =>
-                    prevData.filter((item) => item.id !== id)
-                  );
-                }}
-              />
-            </DropdownMenuItem>
+                <DeleteButton
+                  className="w-full font-normal hover:bg-red-500 hover:text-white justify-start px-2 mb-1 py-1.5 h-auto rounded-sm hover:no-underline cursor-pointer"
+                  variant="link"
+                  collectionName="cars"
+                  id={Number(row.original.id)}
+                  onDelete={(id) => {
+                    setData((prevData) =>
+                      prevData.filter((item) => item.id !== id)
+                    );
+                  }}
+                />
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       );
