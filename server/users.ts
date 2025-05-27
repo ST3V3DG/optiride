@@ -5,7 +5,6 @@ import { db } from "@/db/db";
 import { users } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-// import { drizzle } from "drizzle-orm/mysql2"; // No longer directly using drizzle for user create/update
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 import { auth } from "@/lib/auth";
@@ -42,14 +41,11 @@ export async function createUser(formData: z.infer<typeof createUserPayloadSchem
 
   try {
     const { email, password, role, name, cni_passport_number, phone, validated } = validatedFields.data;
-    
-    // Map role 'client' to 'user' if necessary, based on better-auth expectations
-    // const authRole = role === "client" ? "user" : role;
 
     const betterAuthUserData = {
       email,
       password,
-      role: authRole, 
+      role: role, 
       data: {
         name,
         cni_passport_number,
@@ -95,12 +91,9 @@ export async function updateUser(userId: string, formData: z.infer<typeof userAc
   const { email, role, name, cni_passport_number, phone, validated } = validatedFields.data;
   const password = formData.password; // Access password directly from formData
 
-  // Map role 'client' to 'user' if necessary
-  // const authRole = role === "client" ? "user" : role;
-
   const betterAuthUpdateData: any = {
     email,
-    role: authRole,
+    role: role,
     data: {
       name,
       cni_passport_number,
