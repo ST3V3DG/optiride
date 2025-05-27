@@ -85,7 +85,7 @@ export function SignUpForm({
         // router.push('');
       } else {
         toast.error("Error !", {
-          description: "User registration failed.",
+          description: "User registration failed. " + String(response.error).slice(10),
         });
       }
     } catch (error: any) {

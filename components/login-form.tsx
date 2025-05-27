@@ -56,7 +56,7 @@ export function LoginForm({
         router.push(redirectPath);
       } else {
         toast.error("Error !", {
-          description: "User authentication failed.",
+          description: "User authentication failed. " + String(response.error).slice(10),
         });
         form.reset();
       }
