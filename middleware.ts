@@ -24,10 +24,10 @@ export async function middleware(request: NextRequest) {
 		return NextResponse.redirect(url);
 	}
 
-	const userRoles = session.user.roles || [];
+	const userRoles = session.user.role || [];
 	const allowedRoles = ["admin", "driver"];
 
-	const isAuthorized = userRoles.some(role => allowedRoles.includes(role));
+	const isAuthorized = userRoles;
 
 	if (!isAuthorized) {
 		const url = request.nextUrl.clone();
