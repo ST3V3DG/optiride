@@ -39,24 +39,29 @@ export async function createRide(formData: z.infer<typeof rideActionSchema>) {
   const canCreateAnyRide = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { ride: ["create"] } } });
 
   if (!canCreateAnyRide?.granted) {
-    // @ts-ignore TODO: fix user type from session to include role and id
-    const userRole = session.user.role;
-    // @ts-ignore TODO: fix user type from session to include role and id
-    const userRole = session.user.role;
-    // @ts-ignore
-    const userId = session.user.id;
+    const userRoles = session.user.roles || [];
+    const userId = String(session.user.id); // Ensure userId is a string for comparisons
 
-    if (userRole === 'driver' && String(validatedFields.data.driverId) === userId) {
+    if (userRoles.includes('driver') && String(validatedFields.data.driverId) === userId) {
       // Driver creating for themselves, proceed
-    } else if (userRole === 'user') {
+    } else if (userRoles.includes('user')) {
+      // For 'user' role, permission 'ride: ["create"]' is already checked by canCreateAnyRide.
+      // If not granted, they shouldn't be here. If it was granted, it means users can create rides.
+      // The existing logic assigns their ID to driverId. This is maintained as per instructions.
+      // We need to ensure the initial 'ride: ["create"]' permission in lib/permissions.ts for 'user' role is what allows this.
+      // If canCreateAnyRide was false, it means the 'user' role does not have general 'ride: ["create"]'.
+      // This part of the logic might be redundant if permissions are set up correctly,
+      // as 'user' would either pass canCreateAnyRide or not.
+      // However, to stick to the "if not general, then specific" pattern:
+      // We re-check if the user has specific permission to create (which should be true if they got here and are 'user')
       const canUserCreateRide = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { ride: ["create"] } } });
       if (!canUserCreateRide?.granted) {
-         return { success: false, error: "Forbidden: You do not have permission to create this ride." };
+         return { success: false, error: "Forbidden: You do not have permission to create this ride (user specific check)." };
       }
       // For 'user' role, ensure driverId is their own ID.
-      validatedFields.data.driverId = Number(userId);
+      validatedFields.data.driverId = Number(userId); // This assigns client's ID to driverId
     } else {
-      // Neither admin, nor driver creating for self, nor user creating for self.
+      // Neither admin, nor driver creating for self, nor specific user permission.
       return { success: false, error: "Forbidden: You do not have permission to create this ride." };
     }
   }
@@ -109,25 +114,25 @@ export async function updateRide(rideId: number, formData: z.infer<typeof rideAc
     }
     const rideToUpdate = rideToUpdateResult[0];
 
-    // @ts-ignore TODO: fix user type from session to include role and id
-    const userRole = session.user.role;
-    // @ts-ignore
-    const userId = session.user.id;
+    const userRoles = session.user.roles || [];
+    const userId = String(session.user.id); // Ensure userId is a string
 
-    if (userRole === 'driver' && 
+    if (userRoles.includes('driver') &&
         String(rideToUpdate.driverId) === userId &&
         String(validatedFields.data.driverId) === userId) {
       // Driver updating their own ride, and not changing the driverId to someone else.
-    } else if (userRole === 'user' && String(rideToUpdate.driverId) === userId) { 
+    } else if (userRoles.includes('user') && String(rideToUpdate.driverId) === userId) {
       // User updating a ride they "own" via driverId.
+      // General 'ride: ["update"]' permission for 'user' role should allow this.
+      // This specific check ensures they can only update 'their' rides (where their ID is in driverId).
       const canUserUpdateRide = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { ride: ["update"] } } });
       if (!canUserUpdateRide?.granted) {
-        return { success: false, error: "Forbidden: You do not have permission to update this ride." };
+        return { success: false, error: "Forbidden: You do not have permission to update this ride (user specific check)." };
       }
       // Ensure 'user' role cannot change the driverId to someone else. It must remain their own.
-      validatedFields.data.driverId = Number(userId);
+      validatedFields.data.driverId = Number(userId); // This re-affirms client's ID to driverId
     } else {
-      return { success: false, error: "Forbidden: You do not have permission to update this ride." };
+      return { success: false, error: "Forbidden: You do not have permission to update this ride (general)." };
     }
   }
 
@@ -292,21 +297,20 @@ export async function deleteRide(rideId: number) {
     }
     const rideToDelete = rideToDeleteResult[0];
 
-    // @ts-ignore TODO: fix user type from session to include role and id
-    const userRole = session.user.role;
-    // @ts-ignore
-    const userId = session.user.id;
+    const userRoles = session.user.roles || [];
+    const userId = String(session.user.id); // Ensure userId is a string
 
-    if (userRole === 'driver' && String(rideToDelete.driverId) === userId) {
+    if (userRoles.includes('driver') && String(rideToDelete.driverId) === userId) {
       // Driver deleting their own ride
-    } else if (userRole === 'user' && String(rideToDelete.driverId) === userId) {
+    } else if (userRoles.includes('user') && String(rideToDelete.driverId) === userId) {
       // User deleting a ride they "own" via driverId.
+      // General 'ride: ["delete"]' permission for 'user' role should allow this.
       const canUserDeleteRide = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { ride: ["delete"] } } });
       if (!canUserDeleteRide?.granted) {
-         return { success: false, error: "Forbidden: You do not have permission to delete this ride." };
+         return { success: false, error: "Forbidden: You do not have permission to delete this ride (user specific check)." };
       }
     } else {
-      return { success: false, error: "Forbidden: You do not have permission to delete this ride." };
+      return { success: false, error: "Forbidden: You do not have permission to delete this ride (general)." };
     }
   }
 

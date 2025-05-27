@@ -35,9 +35,9 @@ export async function createCar(formData: z.infer<typeof carActionSchema>) {
 
   if (!canCreateAnyCar?.granted) {
     // Not an admin, check if driver is creating for themselves
-    // @ts-ignore TODO: fix user type from session to include role
-    const isDriver = session.user.role === 'driver';
-    if (!(isDriver && String(validatedFields.data.driverId) === session.user.id)) {
+    const isDriver = session.user.roles?.includes('driver');
+    // Ensure session.user.id (string) is compared correctly with validatedFields.data.driverId (number)
+    if (!(isDriver && String(validatedFields.data.driverId) === String(session.user.id))) {
       return { error: "Forbidden: You do not have permission to create this car." };
     }
   }
@@ -85,11 +85,11 @@ export async function updateCar(carId: number, formData: z.infer<typeof carActio
     }
     const carToUpdate = carToUpdateResult[0];
 
-    // @ts-ignore TODO: fix user type from session to include role
-    const isDriver = session.user.role === 'driver';
-    if (!(isDriver && 
-          String(carToUpdate.driverId) === session.user.id && 
-          String(validatedFields.data.driverId) === session.user.id)) {
+    const isDriver = session.user.roles?.includes('driver');
+    // Ensure session.user.id (string) is compared correctly with driverId (number)
+    if (!(isDriver &&
+          String(carToUpdate.driverId) === String(session.user.id) &&
+          String(validatedFields.data.driverId) === String(session.user.id))) {
       return { error: "Forbidden: You do not have permission to update this car or change its driver." };
     }
   }
@@ -162,9 +162,9 @@ export async function deleteCar(carId: number) {
       return { error: "Car not found." };
     }
     const carToDelete = carToDeleteResult[0];
-    // @ts-ignore TODO: fix user type from session to include role
-    const isDriver = session.user.role === 'driver';
-    if (!(isDriver && String(carToDelete.driverId) === session.user.id)) {
+    const isDriver = session.user.roles?.includes('driver');
+    // Ensure session.user.id (string) is compared correctly with driverId (number)
+    if (!(isDriver && String(carToDelete.driverId) === String(session.user.id))) {
       return { error: "Forbidden: You do not have permission to delete this car." };
     }
   }

@@ -5,7 +5,7 @@ import { db } from "@/db/db";
 import { users } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { drizzle } from "drizzle-orm/mysql2";
+// import { drizzle } from "drizzle-orm/mysql2"; // No longer directly using drizzle for user create/update
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 import { auth } from "@/lib/auth";
@@ -16,11 +16,16 @@ const userActionSchema = z.object({
   name: z.string().min(2),
   phone: z.string().min(9),
   email: z.string().email(),
-  role: z.enum(["client", "driver", "admin"]),
+  role: z.enum(["client", "driver", "admin"]), // better-auth expects 'client' to be 'user'
   validated: z.boolean(),
 });
 
-export async function createUser(formData: z.infer<typeof userActionSchema>) {
+// Schema for createUser, including password
+const createUserPayloadSchema = userActionSchema.extend({
+  password: z.string().min(6, "Password must be at least 6 characters long"),
+});
+
+export async function createUser(formData: z.infer<typeof createUserPayloadSchema>) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) {
     return { error: "Unauthorized" };
@@ -30,27 +35,46 @@ export async function createUser(formData: z.infer<typeof userActionSchema>) {
     return { error: "Forbidden: You do not have permission to create users." };
   }
 
-  const validatedFields = userActionSchema.safeParse(formData);
+  const validatedFields = createUserPayloadSchema.safeParse(formData);
   if (!validatedFields.success) {
     return { error: "Invalid fields", details: validatedFields.error.flatten() };
   }
 
-  // const newUserId = randomUUID();
-
   try {
-    const result = await db.insert(users).values({
-      ...validatedFields.data,
-    }).execute();
+    const { email, password, role, name, cni_passport_number, phone, validated } = validatedFields.data;
+    
+    // Map role 'client' to 'user' if necessary, based on better-auth expectations
+    const authRole = role === "client" ? "user" : role;
+
+    const betterAuthUserData = {
+      email,
+      password,
+      role: authRole, 
+      data: {
+        name,
+        cni_passport_number,
+        phone,
+        validated,
+        // Store original form role if it was 'client' for any specific app logic if needed later
+        // formRole: role 
+      }
+    };
+
+    const newUser = await auth.admin.createUser(betterAuthUserData);
+    if (!newUser) { // Or check for specific error indicators from better-auth
+      return { error: "Better Auth: Failed to create user." };
+    }
 
     revalidatePath("/dashboard/users");
-    return { success: "User created successfully."};
-  } catch (error) {
+    return { success: "User created successfully." };
+  } catch (error: any) {
     console.error("Error creating user:", error);
-    return { error: "Database error: Failed to create user." };
+    // Check for better-auth specific error messages or types if available
+    return { error: error.message || "Server error: Failed to create user." };
   }
 }
 
-export async function updateUser(userId: string, formData: z.infer<typeof userActionSchema>) { 
+export async function updateUser(userId: string, formData: z.infer<typeof userActionSchema & { password?: string }>) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) {
     return { error: "Unauthorized" };
@@ -62,27 +86,49 @@ export async function updateUser(userId: string, formData: z.infer<typeof userAc
     return { error: "Forbidden: You do not have permission to update users." };
   }
 
+  // For updateUser, password is optional. We use userActionSchema and manually check password.
   const validatedFields = userActionSchema.safeParse(formData);
   if (!validatedFields.success) {
     return { error: "Invalid fields", details: validatedFields.error.flatten() };
   }
-  const { ...dataToUpdate } = validatedFields.data; 
+
+  const { email, role, name, cni_passport_number, phone, validated } = validatedFields.data;
+  const password = formData.password; // Access password directly from formData
+
+  // Map role 'client' to 'user' if necessary
+  const authRole = role === "client" ? "user" : role;
+
+  const betterAuthUpdateData: any = {
+    email,
+    role: authRole,
+    data: {
+      name,
+      cni_passport_number,
+      phone,
+      validated,
+    }
+  };
+
+  if (password && password.trim() !== "") {
+    // Add password validation if needed, e.g., min length
+    if (password.length < 6) {
+        return { error: "Password must be at least 6 characters long if provided." };
+    }
+    betterAuthUpdateData.password = password;
+  }
 
   try {
-    await db.update(users)
-      .set({
-        ...dataToUpdate, 
-        updatedAt: sql`NOW()`,
-      })
-      .where(eq(users.id, Number(userId))) 
-      .execute();
+    const updatedUser = await auth.admin.updateUser(userId, betterAuthUpdateData);
+    if (!updatedUser) { // Or check for specific error indicators
+        return { error: "Better Auth: Failed to update user." };
+    }
 
     revalidatePath("/dashboard/users");
     revalidatePath(`/dashboard/users/${userId}`);
     return { success: "User updated successfully." };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating user:", error);
-    return { error: "Database error: Failed to update user." };
+    return { error: error.message || "Server error: Failed to update user." };
   }
 }
 
