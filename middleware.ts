@@ -25,7 +25,7 @@ export async function middleware(request: NextRequest) {
 	}
 
 	const userRoles = session.user.role || [];
-	const allowedRoles = ["admin", "driver"];
+	const allowedRoles = ["admin"];
 
 	const isAuthorized = userRoles;
 
