@@ -16,7 +16,7 @@ const userActionSchema = z.object({
   name: z.string().min(2),
   phone: z.string().min(9),
   email: z.string().email(),
-  role: z.enum(["client", "driver", "admin"]), // better-auth expects 'client' to be 'user'
+  role: z.enum(["user", "driver", "admin"]),
   validated: z.boolean(),
 });
 
@@ -44,7 +44,7 @@ export async function createUser(formData: z.infer<typeof createUserPayloadSchem
     const { email, password, role, name, cni_passport_number, phone, validated } = validatedFields.data;
     
     // Map role 'client' to 'user' if necessary, based on better-auth expectations
-    const authRole = role === "client" ? "user" : role;
+    // const authRole = role === "client" ? "user" : role;
 
     const betterAuthUserData = {
       email,
@@ -96,7 +96,7 @@ export async function updateUser(userId: string, formData: z.infer<typeof userAc
   const password = formData.password; // Access password directly from formData
 
   // Map role 'client' to 'user' if necessary
-  const authRole = role === "client" ? "user" : role;
+  // const authRole = role === "client" ? "user" : role;
 
   const betterAuthUpdateData: any = {
     email,
