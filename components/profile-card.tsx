@@ -156,8 +156,8 @@ export default function ProfileCard({ user }: { user: User }) {
              <div className="col-span-1 md:col-span-2">
               <ul className="space-y-3">
                  <li>
-                  <span className="mr-2 font-medium">CNI/Passport :</span>
-                  <span>{user.cni_passport_number ?? "N/A"}</span>
+                  <span className="mr-2 font-medium">nic/Passport :</span>
+                  <span>{user.nic_passport_number ?? "N/A"}</span>
                 </li>
                 <li>
                   <span className="mr-2 font-medium">Nom :</span>
@@ -189,11 +189,11 @@ export default function ProfileCard({ user }: { user: User }) {
           <CardContent className="flex flex-col gap-4 p-4">
             {/* @ts-ignore */}
             <div className="border rounded-lg border-accent-foreground/50 aspect-video bg-muted flex items-center justify-center text-sm text-muted-foreground">
-              {user.cni_passport_picture_1 ? <img src={user.cni_passport_picture_1 as string} alt="ID Recto" className="object-contain w-full h-full"/> : "Recto ID (non fourni)"}
+              {user.nic_passport_picture_1 ? <img src={user.nic_passport_picture_1 as string} alt="ID Recto" className="object-contain w-full h-full"/> : "Recto ID (non fourni)"}
             </div>
             {/* @ts-ignore */}
             <div className="border rounded-lg border-accent-foreground/50 aspect-video bg-muted flex items-center justify-center text-sm text-muted-foreground">
-            {user.cni_passport_picture_2 ? <img src={user.cni_passport_picture_2 as string} alt="ID Verso" className="object-contain w-full h-full"/> : "Verso ID (non fourni)"}
+            {user.nic_passport_picture_2 ? <img src={user.nic_passport_picture_2 as string} alt="ID Verso" className="object-contain w-full h-full"/> : "Verso ID (non fourni)"}
             </div>
           </CardContent>
         </Card>

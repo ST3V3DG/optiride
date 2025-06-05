@@ -40,7 +40,7 @@ async function validate({ id, validated, setData }: ValidateProps) {
       // --- Mise à jour optimiste de l'UI ---
       setData((prevData) =>
         prevData.map((user) =>
-          user.id === String(id)
+          user.id === id
             ? { ...user, validated: optimisticNewState }
             : user
         )
@@ -74,7 +74,7 @@ async function validate({ id, validated, setData }: ValidateProps) {
     setData((prevData) =>
       prevData.map(
         (user) =>
-          user.id === String(id) ? { ...user, validated: originalState } : user // Revenir à l'état original
+          user.id === id ? { ...user, validated: originalState } : user // Revenir à l'état original
       )
     );
   }
@@ -165,7 +165,7 @@ export const getColumns = (
       const role = row.getValue("role") as User["role"];
       let variant: "default" | "secondary" | "outline" = "default";
       switch (role) {
-        case "client":
+        case "user":
           variant = "default";
           break;
         case "driver":
@@ -251,7 +251,7 @@ export const getColumns = (
                 id={Number(user.id)}
                 onDelete={(id) => {
                   setData((prevData) =>
-                    prevData.filter((item) => item.id !== String(id))
+                    prevData.filter((item) => item.id !== id)
                   );
                 }}
               />

@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "75c46bc4-87af-4ebf-acc1-c32a2d7057aa",
+  "id": "0984c90d-1176-4350-8143-0a289fffcbda",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "accounts": {
@@ -9,21 +9,21 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "bigint unsigned",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": true
         },
         "account_id": {
           "name": "account_id",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "provider_id": {
           "name": "provider_id",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -58,14 +58,14 @@
         },
         "access_token_expires_at": {
           "name": "access_token_expires_at",
-          "type": "timestamp",
+          "type": "datetime(3)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "refresh_token_expires_at": {
           "name": "refresh_token_expires_at",
-          "type": "timestamp",
+          "type": "datetime(3)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -86,19 +86,19 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "datetime(3)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "(now())"
+          "default": "'2025-06-05 16:23:52.161'"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "datetime(3)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "(now())"
+          "default": "'2025-06-05 16:23:52.161'"
         }
       },
       "indexes": {},
@@ -133,7 +133,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "bigint unsigned",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": true
@@ -173,8 +173,8 @@
           "notNull": false,
           "autoincrement": false
         },
-        "number_of_seats": {
-          "name": "number_of_seats",
+        "available_seats": {
+          "name": "available_seats",
           "type": "bigint unsigned",
           "primaryKey": false,
           "notNull": false,
@@ -189,19 +189,19 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "datetime(3)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "(now())"
+          "default": "'2025-06-05 16:23:52.162'"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "datetime(3)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "(now())"
+          "default": "'2025-06-05 16:23:52.162'"
         }
       },
       "indexes": {},
@@ -236,7 +236,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "bigint unsigned",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": true
@@ -250,19 +250,19 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "datetime(3)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "(now())"
+          "default": "'2025-06-05 16:23:52.161'"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "datetime(3)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "(now())"
+          "default": "'2025-06-05 16:23:52.161'"
         }
       },
       "indexes": {},
@@ -278,12 +278,340 @@
       "uniqueConstraints": {},
       "checkConstraint": {}
     },
+    "invitations": {
+      "name": "invitations",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint unsigned",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "inviter_id": {
+          "name": "inviter_id",
+          "type": "bigint unsigned",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "organization_id": {
+          "name": "organization_id",
+          "type": "bigint unsigned",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "role": {
+          "name": "role",
+          "type": "enum('user','driver','admin')",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'user'"
+        },
+        "status": {
+          "name": "status",
+          "type": "enum('pending','accepted','rejected','declined','canceled')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'pending'"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "datetime(3)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "datetime(3)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'2025-06-05 16:23:52.161'"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "datetime(3)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'2025-06-05 16:23:52.161'"
+        }
+      },
+      "indexes": {
+        "invitation_organization_id_idx": {
+          "name": "invitation_organization_id_idx",
+          "columns": [
+            "organization_id"
+          ],
+          "isUnique": false
+        },
+        "invitation_email_idx": {
+          "name": "invitation_email_idx",
+          "columns": [
+            "email"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "invitations_inviter_id_users_id_fk": {
+          "name": "invitations_inviter_id_users_id_fk",
+          "tableFrom": "invitations",
+          "tableTo": "users",
+          "columnsFrom": [
+            "inviter_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "invitations_organization_id_organizations_id_fk": {
+          "name": "invitations_organization_id_organizations_id_fk",
+          "tableFrom": "invitations",
+          "tableTo": "organizations",
+          "columnsFrom": [
+            "organization_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "invitations_id": {
+          "name": "invitations_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "members": {
+      "name": "members",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint unsigned",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "bigint unsigned",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "organization_id": {
+          "name": "organization_id",
+          "type": "bigint unsigned",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "role": {
+          "name": "role",
+          "type": "enum('user','driver','admin')",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'user'"
+        },
+        "joined_at": {
+          "name": "joined_at",
+          "type": "datetime(3)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'2025-06-05 16:23:52.161'"
+        },
+        "left_at": {
+          "name": "left_at",
+          "type": "datetime(3)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "datetime(3)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'2025-06-05 16:23:52.161'"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "datetime(3)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'2025-06-05 16:23:52.161'"
+        }
+      },
+      "indexes": {
+        "member_user_id_idx": {
+          "name": "member_user_id_idx",
+          "columns": [
+            "user_id"
+          ],
+          "isUnique": false
+        },
+        "member_organization_id_idx": {
+          "name": "member_organization_id_idx",
+          "columns": [
+            "organization_id"
+          ],
+          "isUnique": false
+        },
+        "unique_user_org_idx": {
+          "name": "unique_user_org_idx",
+          "columns": [
+            "user_id",
+            "organization_id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "members_user_id_users_id_fk": {
+          "name": "members_user_id_users_id_fk",
+          "tableFrom": "members",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "members_organization_id_organizations_id_fk": {
+          "name": "members_organization_id_organizations_id_fk",
+          "tableFrom": "members",
+          "tableTo": "organizations",
+          "columnsFrom": [
+            "organization_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "members_id": {
+          "name": "members_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "organizations": {
+      "name": "organizations",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint unsigned",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "slug": {
+          "name": "slug",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "logo": {
+          "name": "logo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "datetime(3)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'2025-06-05 16:23:52.160'"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "datetime(3)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'2025-06-05 16:23:52.160'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "organizations_id": {
+          "name": "organizations_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "organizations_slug_unique": {
+          "name": "organizations_slug_unique",
+          "columns": [
+            "slug"
+          ]
+        }
+      },
+      "checkConstraint": {}
+    },
     "rides": {
       "name": "rides",
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "bigint unsigned",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": true
@@ -295,8 +623,8 @@
           "notNull": true,
           "autoincrement": false
         },
-        "carId": {
-          "name": "carId",
+        "car_id": {
+          "name": "car_id",
           "type": "bigint unsigned",
           "primaryKey": false,
           "notNull": true,
@@ -365,8 +693,8 @@
           "notNull": false,
           "autoincrement": false
         },
-        "number_of_seats": {
-          "name": "number_of_seats",
+        "available_seats": {
+          "name": "available_seats",
           "type": "bigint unsigned",
           "primaryKey": false,
           "notNull": false,
@@ -388,19 +716,19 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "datetime(3)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "(now())"
+          "default": "'2025-06-05 16:23:52.162'"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "datetime(3)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "(now())"
+          "default": "'2025-06-05 16:23:52.162'"
         }
       },
       "indexes": {},
@@ -418,12 +746,12 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "rides_carId_cars_id_fk": {
-          "name": "rides_carId_cars_id_fk",
+        "rides_car_id_cars_id_fk": {
+          "name": "rides_car_id_cars_id_fk",
           "tableFrom": "rides",
           "tableTo": "cars",
           "columnsFrom": [
-            "carId"
+            "car_id"
           ],
           "columnsTo": [
             "id"
@@ -474,7 +802,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "bigint unsigned",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": true
@@ -507,28 +835,42 @@
           "notNull": false,
           "autoincrement": false
         },
+        "active_organization_id": {
+          "name": "active_organization_id",
+          "type": "bigint unsigned",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "impersonated_by": {
+          "name": "impersonated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "expires_at": {
           "name": "expires_at",
-          "type": "timestamp",
+          "type": "datetime(3)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "datetime(3)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "(now())"
+          "default": "'2025-06-05 16:23:52.161'"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "datetime(3)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "(now())"
+          "default": "'2025-06-05 16:23:52.161'"
         }
       },
       "indexes": {},
@@ -544,6 +886,19 @@
             "id"
           ],
           "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "sessions_active_organization_id_organizations_id_fk": {
+          "name": "sessions_active_organization_id_organizations_id_fk",
+          "tableFrom": "sessions",
+          "tableTo": "organizations",
+          "columnsFrom": [
+            "active_organization_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },
@@ -570,14 +925,14 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "bigint unsigned",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": true
         },
         "name": {
           "name": "name",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -604,8 +959,30 @@
           "notNull": false,
           "autoincrement": false
         },
-        "cni_passport_number": {
-          "name": "cni_passport_number",
+        "banned": {
+          "name": "banned",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "ban_reason": {
+          "name": "ban_reason",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "ban_expires": {
+          "name": "ban_expires",
+          "type": "datetime(3)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "nic_passport_number": {
+          "name": "nic_passport_number",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false,
@@ -618,15 +995,15 @@
           "notNull": false,
           "autoincrement": false
         },
-        "cni_passport_picture_1": {
-          "name": "cni_passport_picture_1",
+        "nic_passport_picture_1": {
+          "name": "nic_passport_picture_1",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "cni_passport_picture_2": {
-          "name": "cni_passport_picture_2",
+        "nic_passport_picture_2": {
+          "name": "nic_passport_picture_2",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false,
@@ -634,11 +1011,11 @@
         },
         "role": {
           "name": "role",
-          "type": "enum('driver','client','admin')",
+          "type": "enum('user','driver','admin')",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
-          "default": "'client'"
+          "default": "'user'"
         },
         "validated": {
           "name": "validated",
@@ -650,19 +1027,19 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "datetime(3)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "(now())"
+          "default": "'2025-06-05 16:23:52.159'"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "datetime(3)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "(now())"
+          "default": "'2025-06-05 16:23:52.159'"
         }
       },
       "indexes": {},
@@ -682,10 +1059,10 @@
             "email"
           ]
         },
-        "users_cni_passport_number_unique": {
-          "name": "users_cni_passport_number_unique",
+        "users_nic_passport_number_unique": {
+          "name": "users_nic_passport_number_unique",
           "columns": [
-            "cni_passport_number"
+            "nic_passport_number"
           ]
         },
         "users_phone_unique": {
@@ -702,7 +1079,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "bigint unsigned",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": true
@@ -723,26 +1100,26 @@
         },
         "expires_at": {
           "name": "expires_at",
-          "type": "timestamp",
+          "type": "datetime(3)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "datetime(3)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "(now())"
+          "default": "'2025-06-05 16:23:52.161'"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "datetime(3)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "(now())"
+          "default": "'2025-06-05 16:23:52.161'"
         }
       },
       "indexes": {},

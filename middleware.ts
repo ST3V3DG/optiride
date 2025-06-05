@@ -1,20 +1,19 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getSessionCookie } from "better-auth/cookies";
- 
+// middleware.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { chain } from './middlewares/chain';
+import { auth } from './middlewares/auth';
+import { authorization } from './middlewares/authorization';
+
 export async function middleware(request: NextRequest) {
-	const sessionCookie = getSessionCookie(request);
-	console.log(sessionCookie);
- 
-	if (!sessionCookie) {
-		const url = request.nextUrl.clone();
-		url.pathname = "/login";
-		url.searchParams.set("redirect", request.nextUrl.pathname);
-		return NextResponse.redirect(url);
-	}
- 
-	return NextResponse.next();
+  const pathname = request.nextUrl.pathname;
+
+  if (pathname.startsWith('/dashboard')) {
+    return chain(auth, authorization)(request);
+  }
+
+  return NextResponse.next();
 }
- 
+
 export const config = {
-	matcher: ["/dashboard", "/dashboard/:path*"],
+  matcher: ['/dashboard/:path*'],
 };

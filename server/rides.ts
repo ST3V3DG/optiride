@@ -6,6 +6,8 @@ import { rides, users, cities, cars } from "@/db/schema";
 import { and, eq, getTableColumns, gte, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { RideWithNames } from "../lib/types";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 const rideActionSchema = z.object({
     driverId: z.number(),
@@ -23,15 +25,51 @@ const rideActionSchema = z.object({
 });
 
 export async function createRide(formData: z.infer<typeof rideActionSchema>) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user) {
+    return { success: false, error: "Unauthorized" };
+  }
+
   // Validate input
   const validatedFields = rideActionSchema.safeParse(formData);
   if (!validatedFields.success) {
     return { success: false, error: "Invalid fields", details: validatedFields.error.flatten() };
   }
 
+  const canCreateAnyRide = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { ride: ["create"] } } });
+
+  if (!canCreateAnyRide?.success) {
+    const userRoles = session.user.role;
+    const userId = String(session.user.id); // Ensure userId is a string for comparisons
+
+    if (userRoles === 'driver' && String(validatedFields.data.driverId) === userId) {
+      // Driver creating for themselves, proceed
+    } else if (userRoles === 'user') {
+      // For 'user' role, permission 'ride: ["create"]' is already checked by canCreateAnyRide.
+      // If not success, they shouldn't be here. If it was success, it means users can create rides.
+      // The existing logic assigns their ID to driverId. This is maintained as per instructions.
+      // We need to ensure the initial 'ride: ["create"]' permission in lib/permissions.ts for 'user' role is what allows this.
+      // If canCreateAnyRide was false, it means the 'user' role does not have general 'ride: ["create"]'.
+      // This part of the logic might be redundant if permissions are set up correctly,
+      // as 'user' would either pass canCreateAnyRide or not.
+      // However, to stick to the "if not general, then specific" pattern:
+      // We re-check if the user has specific permission to create (which should be true if they got here and are 'user')
+      const canUserCreateRide = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { ride: ["create"] } } });
+      if (!canUserCreateRide?.success) {
+         return { success: false, error: "Forbidden: You do not have permission to create this ride (user specific check)." };
+      }
+      // For 'user' role, ensure driverId is their own ID.
+      validatedFields.data.driverId = Number(userId); // This assigns client's ID to driverId
+    } else {
+      // Neither admin, nor driver creating for self, nor specific user permission.
+      return { success: false, error: "Forbidden: You do not have permission to create this ride." };
+    }
+  }
+
   try {
     const rideData = {
-      driverId: validatedFields.data.driverId,
+      // Ensure driverId is correctly set from validatedFields, especially if modified for 'user' role.
+      driverId: validatedFields.data.driverId, 
       place_of_departure: validatedFields.data.place_of_departure,
       place_of_arrival: validatedFields.data.place_of_arrival,
       collection_point: validatedFields.data.collection_point,
@@ -57,14 +95,51 @@ export async function createRide(formData: z.infer<typeof rideActionSchema>) {
 }
 
 export async function updateRide(rideId: number, formData: z.infer<typeof rideActionSchema>) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user) {
+    return { success: false, error: "Unauthorized" };
+  }
+
   const validatedFields = rideActionSchema.safeParse(formData);
   if (!validatedFields.success) {
     return { success: false, error: "Invalid fields", details: validatedFields.error.flatten() };
   }
 
+  const canUpdateAnyRide = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { ride: ["update"] } } });
+
+  if (!canUpdateAnyRide?.success) {
+    const rideToUpdateResult = await db.select().from(rides).where(eq(rides.id, rideId)).limit(1);
+    if (!rideToUpdateResult[0]) {
+      return { success: false, error: "Ride not found." };
+    }
+    const rideToUpdate = rideToUpdateResult[0];
+
+    const userRoles = session.user.role;
+    const userId = String(session.user.id); // Ensure userId is a string
+
+    if (userRoles === 'driver' &&
+        String(rideToUpdate.driverId) === userId &&
+        String(validatedFields.data.driverId) === userId) {
+      // Driver updating their own ride, and not changing the driverId to someone else.
+    } else if (userRoles === 'user' && String(rideToUpdate.driverId) === userId) {
+      // User updating a ride they "own" via driverId.
+      // General 'ride: ["update"]' permission for 'user' role should allow this.
+      // This specific check ensures they can only update 'their' rides (where their ID is in driverId).
+      const canUserUpdateRide = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { ride: ["update"] } } });
+      if (!canUserUpdateRide?.success) {
+        return { success: false, error: "Forbidden: You do not have permission to update this ride (user specific check)." };
+      }
+      // Ensure 'user' role cannot change the driverId to someone else. It must remain their own.
+      validatedFields.data.driverId = Number(userId); // This re-affirms client's ID to driverId
+    } else {
+      return { success: false, error: "Forbidden: You do not have permission to update this ride (general)." };
+    }
+  }
+
   try {
     const updateData = {
-      driverId: validatedFields.data.driverId,
+      // Ensure driverId is correctly set from validatedFields, especially if modified for 'user' role.
+      driverId: validatedFields.data.driverId, 
       place_of_departure: validatedFields.data.place_of_departure,
       place_of_arrival: validatedFields.data.place_of_arrival,
       collection_point: validatedFields.data.collection_point,
@@ -159,7 +234,7 @@ export async function getFilteredRides(departure: string | null, arrival: string
   }
 
   if (seats && !isNaN(Number(seats))) {
-    conditions.push(gte(rides.number_of_seats, Number(seats)));
+    conditions.push(gte(rides.available_seats, Number(seats)));
   }
 
   const result = await db
@@ -204,5 +279,47 @@ export async function getRideAction(id:string) {
   } catch (error) {
     console.error("Error fetching ride:", error);
     return {success: false, error: "Database error: Failed to fetch ride."};
+  }
+}
+
+export async function deleteRide(rideId: number) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  const canDeleteAnyRide = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { ride: ["delete"] } } });
+
+  if (!canDeleteAnyRide?.success) {
+    const rideToDeleteResult = await db.select().from(rides).where(eq(rides.id, rideId)).limit(1);
+    if (!rideToDeleteResult[0]) {
+      return { success: false, error: "Ride not found." };
+    }
+    const rideToDelete = rideToDeleteResult[0];
+
+    const userRoles = session.user.role;
+    const userId = String(session.user.id); // Ensure userId is a string
+
+    if (userRoles === 'driver' && String(rideToDelete.driverId) === userId) {
+      // Driver deleting their own ride
+    } else if (userRoles === 'user' && String(rideToDelete.driverId) === userId) {
+      // User deleting a ride they "own" via driverId.
+      // General 'ride: ["delete"]' permission for 'user' role should allow this.
+      const canUserDeleteRide = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { ride: ["delete"] } } });
+      if (!canUserDeleteRide?.success) {
+         return { success: false, error: "Forbidden: You do not have permission to delete this ride (user specific check)." };
+      }
+    } else {
+      return { success: false, error: "Forbidden: You do not have permission to delete this ride (general)." };
+    }
+  }
+
+  try {
+    await db.delete(rides).where(eq(rides.id, rideId)).execute();
+    revalidatePath("/dashboard/rides");
+    return { success: true, message: "Ride deleted successfully." };
+  } catch (error) {
+    console.error("Error deleting ride:", error);
+    return { success: false, error: "Database error: Failed to delete ride." };
   }
 }

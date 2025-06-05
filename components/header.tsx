@@ -83,7 +83,7 @@ export default function Header({
               </div>
               <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
                 <ThemeToggle />
-                { !session.data ? <><Button asChild variant="outline">
+                { !session.data ? <><Button asChild variant="glow">
                   <Link href="/login">
                     <span>Se connecter</span>
                   </Link>

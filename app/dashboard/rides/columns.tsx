@@ -14,6 +14,7 @@ import Link from "next/link";
 import { Checkbox } from "@/components/ui/checkbox";
 import DeleteButton from "@/components/delete-button";
 import { type RideWithNames } from "@/lib/types";
+import { authClient } from "@/lib/auth-client";
 
 export const getColumns = (
   setData: React.Dispatch<React.SetStateAction<RideWithNames[]>>
@@ -325,6 +326,24 @@ export const getColumns = (
     header: () => <div className="text-left">Action</div>,
     id: "actions",
     cell: ({ row }) => {
+      const { data: session } = authClient.useSession();
+      // Note: Adjust session.user.id and session.user.role if better-auth nests these differently
+      // e.g., session.user.databaseId or session.user.activeOrganizationRole
+      const currentUserId = session?.user?.id;
+      const currentUserRole = session?.user?.role;
+
+      const isOwner = String(row.original.driverId) === String(currentUserId);
+
+      const canUpdate = authClient.organization.checkRolePermission({ permissions: { ride: ["update"] } });
+      // Admin can edit if they have the permission.
+      // Driver or User can edit if they have the permission AND are the owner (via driverId).
+      const showEditButton = canUpdate && (currentUserRole === 'admin' || isOwner);
+
+      const canDelete = authClient.organization.checkRolePermission({ permissions: { ride: ["delete"] } });
+      // Admin can delete if they have the permission.
+      // Driver or User can delete if they have the permission AND are the owner (via driverId).
+      const showDeleteButton = canDelete && (currentUserRole === 'admin' || isOwner);
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -336,42 +355,30 @@ export const getColumns = (
               <MoreHorizontal className="w-4 h-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            className="*:cursor-pointer text-left"
-          >
+          <DropdownMenuContent align="end" className="*:cursor-pointer text-left">
             <DropdownMenuItem asChild>
-              <Link
-                className="w-full"
-                href={`/dashboard/rides/${row.original.id}`}
-              >
-                Details
-              </Link>
+              <Link className="w-full" href={`/dashboard/rides/${row.original.id}`}>Details</Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link
-                className="w-full"
-                href={`/dashboard/rides/${row.original.id}/edit`}
-              >
-                Edit
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onSelect={() => false}
-              className="p-0 focus:bg-transparent"
-            >
-              <DeleteButton
-                className="w-full font-normal hover:bg-red-500 hover:text-white justify-start px-2 mb-1 py-1.5 h-auto rounded-sm hover:no-underline cursor-pointer"
-                variant="link"
-                collectionName="rides"
-                id={Number(row.original.id)}
-                onDelete={(id) => {
-                  setData((prevData) =>
-                    prevData.filter((item) => item.id !== id)
-                  );
-                }}
-              />
-            </DropdownMenuItem>
+            {showEditButton && (
+              <DropdownMenuItem asChild>
+                <Link className="w-full" href={`/dashboard/rides/${row.original.id}/edit`}>Edit</Link>
+              </DropdownMenuItem>
+            )}
+            {showDeleteButton && (
+              <DropdownMenuItem onSelect={() => false} className="p-0 focus:bg-transparent">
+                <DeleteButton
+                  className="w-full font-normal hover:bg-red-500 hover:text-white justify-start px-2 mb-1 py-1.5 h-auto rounded-sm hover:no-underline cursor-pointer"
+                  variant="link"
+                  collectionName="rides"
+                  id={Number(row.original.id)}
+                  onDelete={(id) => {
+                    setData((prevData) =>
+                      prevData.filter((item) => item.id !== id)
+                    );
+                  }}
+                />
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       );
