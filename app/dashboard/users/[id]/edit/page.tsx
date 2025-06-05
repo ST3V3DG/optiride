@@ -47,7 +47,7 @@ export default async function Page({ params }: { params: { id: string } }) {
   }
   // Check permission to update users
   const canUpdateUsers = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["update"] } } });
-  if (!canUpdateUsers?.granted) {
+  if (!canUpdateUsers?.success) {
     redirect('/dashboard'); // Or an access denied page
   }
 

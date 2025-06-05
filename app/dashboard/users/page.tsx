@@ -38,12 +38,9 @@ export default async function Page() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
-
-  if (!session) {
-    redirect('/login'); 
-  }
+  
   const canViewPage = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["read"] } } });
-  if (!canViewPage?.granted) {
+  if (!canViewPage?.success) {
     redirect('/dashboard');
   }
 
@@ -61,7 +58,7 @@ export default async function Page() {
 
   const pageHeaderActions = (
     <div className="flex items-center gap-2">
-      {canCreateUsers?.granted && (
+      {canCreateUsers?.success && (
         <Button asChild>
           <a href="/dashboard/users/create">Create User</a>
         </Button>
