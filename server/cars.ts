@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { db } from "@/db/db";
 import { users, cars } from "@/db/schema";
+import type { NewCar } from "@/db/schema";
 import { eq, sql, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
@@ -15,7 +16,7 @@ const carActionSchema = z.object({
   year: z.coerce.number().min(1900, "Invalid year").max(new Date().getFullYear() + 1, "Invalid year"),
   comfort: z.enum(["standard", "premium", "luxury"]).optional(),
   registration: z.string().min(1, "Registration is required"),
-  number_of_seats: z.coerce.number().min(1, "At least one seat").max(100),
+  available_seats: z.coerce.number().min(1, "At least one seat").max(100),
 });
 
 type CarComfort = "standard" | "premium" | "luxury";
@@ -33,9 +34,9 @@ export async function createCar(formData: z.infer<typeof carActionSchema>) {
 
   const canCreateAnyCar = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { car: ["create"] } } });
 
-  if (!canCreateAnyCar?.granted) {
+  if (!canCreateAnyCar?.success) {
     // Not an admin, check if driver is creating for themselves
-    const isDriver = session.user.roles?.includes('driver');
+    const isDriver = session.user.role === 'driver';
     // Ensure session.user.id (string) is compared correctly with validatedFields.data.driverId (number)
     if (!(isDriver && String(validatedFields.data.driverId) === String(session.user.id))) {
       return { error: "Forbidden: You do not have permission to create this car." };
@@ -43,18 +44,17 @@ export async function createCar(formData: z.infer<typeof carActionSchema>) {
   }
 
   try {
-    const carData = {
-      driverId: validatedFields.data.driverId,
-      brand: validatedFields.data.brand,
-      model: validatedFields.data.model,
+    await db.insert(cars).values({
+      driverId: Number(validatedFields.data.driverId),
+      brand: String(validatedFields.data.brand),
+      model: String(validatedFields.data.model),
       year: String(validatedFields.data.year),
       comfort: validatedFields.data.comfort as CarComfort | undefined,
-      registration: validatedFields.data.registration,
-      number_of_seats: validatedFields.data.number_of_seats,
+      registration: String(validatedFields.data.registration),
+      available_seats: Number(validatedFields.data.available_seats),
       createdAt: sql`NOW()`,
       updatedAt: sql`NOW()`,
-    };
-    await db.insert(cars).values(carData).execute();
+    }).execute();
 
     revalidatePath("/dashboard/cars");
     return { success: "Car created successfully." };
@@ -77,7 +77,7 @@ export async function updateCar(carId: number, formData: z.infer<typeof carActio
 
   const canUpdateAnyCar = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { car: ["update"] } } });
 
-  if (!canUpdateAnyCar?.granted) {
+  if (!canUpdateAnyCar?.success) {
     // Not an admin, check if driver is updating their own car
     const carToUpdateResult = await db.select().from(cars).where(eq(cars.id, carId)).limit(1);
     if (!carToUpdateResult[0]) {
@@ -85,7 +85,7 @@ export async function updateCar(carId: number, formData: z.infer<typeof carActio
     }
     const carToUpdate = carToUpdateResult[0];
 
-    const isDriver = session.user.roles?.includes('driver');
+    const isDriver = session.user.role === 'driver';
     // Ensure session.user.id (string) is compared correctly with driverId (number)
     if (!(isDriver &&
           String(carToUpdate.driverId) === String(session.user.id) &&
@@ -102,8 +102,8 @@ export async function updateCar(carId: number, formData: z.infer<typeof carActio
       year: String(validatedFields.data.year),
       comfort: validatedFields.data.comfort as CarComfort | undefined,
       registration: validatedFields.data.registration,
-      number_of_seats: validatedFields.data.number_of_seats,
-      updatedAt: sql`NOW()`
+      available_seats: validatedFields.data.available_seats,
+      updatedAt: new Date()
     };
 
     await db.update(cars)
@@ -155,14 +155,14 @@ export async function deleteCar(carId: number) {
 
   const canDeleteAnyCar = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { car: ["delete"] } } });
 
-  if (!canDeleteAnyCar?.granted) {
+  if (!canDeleteAnyCar?.success) {
     // Not an admin, check if driver is deleting their own car
     const carToDeleteResult = await db.select().from(cars).where(eq(cars.id, carId)).limit(1);
     if (!carToDeleteResult[0]) {
       return { error: "Car not found." };
     }
     const carToDelete = carToDeleteResult[0];
-    const isDriver = session.user.roles?.includes('driver');
+    const isDriver = session.user.role === 'driver';
     // Ensure session.user.id (string) is compared correctly with driverId (number)
     if (!(isDriver && String(carToDelete.driverId) === String(session.user.id))) {
       return { error: "Forbidden: You do not have permission to delete this car." };

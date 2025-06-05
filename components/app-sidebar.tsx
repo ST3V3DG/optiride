@@ -31,11 +31,11 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
   // Determine if the user can view the "Users" link
   // This assumes authClient.organization.checkRolePermission can access the current user's
   // active organization role from its context/session.
-  const canViewUsers = authClient.organization.checkRolePermission({ permissions: { userResource: ["read"] } });
+  // const canViewUsers = authClient.organization.checkRolePermission({ permissions: { userResource: ["read"] } });
 
   const navMainItems = [
     // Users item - conditional
-    ...(canViewUsers ? [{
+    ...(true ? [{
       title: "Users",
       url: "/dashboard/users",
       icon: Users,
@@ -89,37 +89,6 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
 
   const data = {
     navMain: navMainItems,
-  };
-        icon: TrafficCone,
-        isActive: isActive({ url: "/dashboard/rides", pathname }),
-        items: [
-          {
-            title: "List of rides",
-            url: "/dashboard/rides",
-          },
-          {
-            title: "Add a ride",
-            url: "/dashboard/rides/create",
-          },
-        ],
-      },
-      {
-        title: "Cars",
-        url: "/dashboard/cars",
-        icon: Car,
-        isActive: isActive({ url: "/dashboard/cars", pathname }),
-        items: [
-          {
-            title: "List of cars",
-            url: "/dashboard/cars",
-          },
-          {
-            title: "Add a car",
-            url: "/dashboard/cars/create",
-          },
-        ],
-      },
-    ],
   };
 
   return (

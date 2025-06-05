@@ -1,5 +1,4 @@
 import { defineConfig } from "drizzle-kit";
-// import "dotenv/config";
 
 export default defineConfig({
   dialect: "mysql",
@@ -10,7 +9,7 @@ export default defineConfig({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     database: process.env.DB_NAME,
-    password: undefined,
+    password: process.env.DB_PASSWORD ?? undefined,
     port: Number(process.env.DB_PORT),
   },
 });

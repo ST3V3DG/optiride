@@ -17,35 +17,36 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Eye, EyeOff, Link } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "./ui/select";
 import { toast } from "sonner";
-import { Checkbox } from "./ui/checkbox";
+// import { Checkbox } from "./ui/checkbox";
 import { createUser, updateUser } from "@/server/users";
 import Loader from "./loader";
 import { User } from "@/db/schema"
+import { UserFormProps } from "@/lib/types";
 
 // Base schema for common fields
 const baseFormSchema = z.object({
-  cni_passport_number: z.string().min(9, {
-    message: "CNI/Passport must be at least 9 characters.",
-  }),
+  // nic_passport_number: z.string().min(9, {
+  //   message: "NIC/Passport must be at least 9 characters.",
+  // }),
   name: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
-  phone: z.string().min(9, {
-    message: "Phone must be at least 9 characters.",
-  }),
-  email: z.string().email(),
-  role: z.enum(["client", "driver", "admin"], {
-    message: "Type must be one of: client, driver, admin.",
-  }),
-  validated: z.boolean(),
+  // phone: z.string().min(9, {
+  //   message: "Phone must be at least 9 characters.",
+  // }),
+  email: z.email(),
+  // role: z.enum(["user", "driver", "admin"], {
+  //   message: "Type must be one of: user, driver, admin.",
+  // }),
+  // validated: z.boolean(),
 });
 
 // For create operations, password is required
@@ -65,11 +66,6 @@ const updateFormSchema = baseFormSchema.extend({
     .optional(),
 });
 
-interface UserFormProps {
-  data?: User;
-  operation: "create" | "update";
-}
-
 export default function UsersForm({ data, operation }: UserFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -82,13 +78,13 @@ export default function UsersForm({ data, operation }: UserFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema as any),
     defaultValues: {
-      cni_passport_number: data?.cni_passport_number ?? "",
+      // nic_passport_number: data?.nic_passport_number ?? "",
       name: data?.name ?? "",
       password: "",
-      phone: data?.phone ?? "",
+      // phone: data?.phone ?? "",
       email: data?.email ?? "",
-      role: data?.role ?? undefined,
-      validated: data?.validated ?? false,
+      // role: data?.role ?? undefined,
+      // validated: data?.validated ?? false,
     },
   });
 
@@ -130,7 +126,7 @@ export default function UsersForm({ data, operation }: UserFormProps) {
         }
       } else if (operation === "create") {
         // For create operations
-        const result = await createUser(values);
+        const result = await createUser({name: values.name, email: values.email, password: String(values.password)});
 
         if (result.success) {
           toast("Success!", {
@@ -171,12 +167,12 @@ export default function UsersForm({ data, operation }: UserFormProps) {
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-8 grid grid-cols-1 md:grid-cols-2 gap-4"
       >
-        <FormField
+        {/* <FormField
           control={form.control}
-          name="cni_passport_number"
+          name="nic_passport_number"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>CNI/Passport</FormLabel>
+              <FormLabel>NIC/Passport</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Enter the ID card or your passport number"
@@ -189,7 +185,7 @@ export default function UsersForm({ data, operation }: UserFormProps) {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
 
         <FormField
           control={form.control}
@@ -240,7 +236,7 @@ export default function UsersForm({ data, operation }: UserFormProps) {
           )}
         />
 
-        <FormField
+        {/* <FormField
           control={form.control}
           name="phone"
           render={({ field }) => (
@@ -255,7 +251,7 @@ export default function UsersForm({ data, operation }: UserFormProps) {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
 
         <FormField
           control={form.control}
@@ -274,7 +270,7 @@ export default function UsersForm({ data, operation }: UserFormProps) {
           )}
         />
 
-        <FormField
+        {/* <FormField
           control={form.control}
           name="role"
           render={({ field }) => (
@@ -296,9 +292,9 @@ export default function UsersForm({ data, operation }: UserFormProps) {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
 
-        <FormField
+        {/* <FormField
           control={form.control}
           name="validated"
           render={({ field }) => (
@@ -320,7 +316,7 @@ export default function UsersForm({ data, operation }: UserFormProps) {
               </div>
             </FormItem>
           )}
-        />
+        /> */}
 
         <Button
           className="float-right hover:cursor-pointer text-white md:col-span-2"
