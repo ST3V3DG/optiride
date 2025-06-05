@@ -1,4 +1,4 @@
-import { type Car, type Ride } from "@/db/schema";
+import { User, type Car, type Ride } from "@/db/schema";
 
 export type RideWithNames = Ride & {
   driver_name: string | null;
@@ -28,4 +28,9 @@ export type SearchParams = {
 
 export type RidesListProps = {
   initialRides: RideWithNames[];
+}
+
+export type UserFormProps = {
+  data?: User;
+  operation: "create" | "update";
 }
