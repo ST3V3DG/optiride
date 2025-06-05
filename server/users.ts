@@ -11,12 +11,16 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
 const userActionSchema = z.object({
-  cni_passport_number: z.string().min(9),
+  // nic_passport_number: z.string().min(9),
   name: z.string().min(2),
-  phone: z.string().min(9),
+  // phone: z.string().min(9),
   email: z.string().email(),
-  role: z.enum(["user", "driver", "admin"]),
-  validated: z.boolean(),
+  // role: z.enum(["user", "driver", "admin"]),
+  // validated: z.boolean(),
+});
+
+const updateUserSchema = userActionSchema.extend({
+  password: z.string().optional()
 });
 
 // Schema for createUser, including password
@@ -30,7 +34,7 @@ export async function createUser(formData: z.infer<typeof createUserPayloadSchem
     return { error: "Unauthorized" };
   }
   const canCreate = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["create"] } } });
-  if (!canCreate?.granted) {
+  if (!canCreate?.success) {
     return { error: "Forbidden: You do not have permission to create users." };
   }
 
@@ -40,23 +44,13 @@ export async function createUser(formData: z.infer<typeof createUserPayloadSchem
   }
 
   try {
-    const { email, password, role, name, cni_passport_number, phone, validated } = validatedFields.data;
+    const { name, email, password } = validatedFields.data;
 
-    const betterAuthUserData = {
-      email,
-      password,
-      role: role, 
-      data: {
-        name,
-        cni_passport_number,
-        phone,
-        validated,
-        // Store original form role if it was 'client' for any specific app logic if needed later
-        // formRole: role 
-      }
-    };
-
-    const newUser = await auth.admin.createUser(betterAuthUserData);
+    const newUser = await auth.api.signUpEmail({ body: {
+      name: name,
+      email: email,
+      password: password,
+    }, headers: await headers() });
     if (!newUser) { // Or check for specific error indicators from better-auth
       return { error: "Better Auth: Failed to create user." };
     }
@@ -70,35 +64,29 @@ export async function createUser(formData: z.infer<typeof createUserPayloadSchem
   }
 }
 
-export async function updateUser(userId: string, formData: z.infer<typeof userActionSchema & { password?: string }>) {
+export async function updateUser(userId: string, formData: z.infer<typeof updateUserSchema>) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) {
     return { error: "Unauthorized" };
   }
   const canUpdate = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["update"] } } });
-  if (!canUpdate?.granted) {
+  if (!canUpdate?.success) {
     // For now, strictly checking admin permission for this generic update function.
     // A separate updateProfile function could handle self-updates with different logic if needed.
     return { error: "Forbidden: You do not have permission to update users." };
   }
 
   // For updateUser, password is optional. We use userActionSchema and manually check password.
-  const validatedFields = userActionSchema.safeParse(formData);
+  const validatedFields = updateUserSchema.safeParse(formData);
   if (!validatedFields.success) {
     return { error: "Invalid fields", details: validatedFields.error.flatten() };
   }
 
-  const { email, role, name, cni_passport_number, phone, validated } = validatedFields.data;
-  const password = formData.password; // Access password directly from formData
-
+  const { name, email, password } = validatedFields.data;
   const betterAuthUpdateData: any = {
     email,
-    role: role,
     data: {
       name,
-      cni_passport_number,
-      phone,
-      validated,
     }
   };
 
@@ -111,7 +99,7 @@ export async function updateUser(userId: string, formData: z.infer<typeof userAc
   }
 
   try {
-    const updatedUser = await auth.admin.updateUser(userId, betterAuthUpdateData);
+    const updatedUser = await updateUser(userId, betterAuthUpdateData);
     if (!updatedUser) { // Or check for specific error indicators
         return { error: "Better Auth: Failed to update user." };
     }
@@ -131,7 +119,7 @@ export async function toggleProfileValidation(id: string, validationStatus: bool
     return { error: "Unauthorized" };
   }
   const canValidate = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["update"] } } });
-  if (!canValidate?.granted) {
+  if (!canValidate?.success) {
     return { error: "Forbidden: You do not have permission to change user validation status." };
   }
 
@@ -178,7 +166,7 @@ export async function uploadProfilePicture(formData: FormData, userId?: string |
   // it means an admin might be trying to change another user's picture.
   if (userId && userId !== authUser.id) {
     const canUpdateOther = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["update"] } } });
-    if (!canUpdateOther?.granted) {
+    if (!canUpdateOther?.success) {
       return { error: "Forbidden: You do not have permission to update other users' profile pictures." };
     }
   }
