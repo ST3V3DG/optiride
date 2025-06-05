@@ -6,7 +6,7 @@ import { Button } from "./ui/button";
 
 export default function LogoutButton({ className }: { className?: string }) {
   const router = useRouter();
-  return <Button className={className} onClick={() => authClient.signOut({
+  return <Button className={className} variant={"glow"} onClick={() => authClient.signOut({
     fetchOptions: {
       onSuccess: () => {
         router.push("/login"); // redirect to login page
