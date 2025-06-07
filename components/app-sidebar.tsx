@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { Car, TrafficCone, Users } from "lucide-react";
-import { authClient } from "@/lib/auth-client";
 
 import { NavMain } from "@/components/nav-main";
 import NavUserClient from "@/components/nav-user";

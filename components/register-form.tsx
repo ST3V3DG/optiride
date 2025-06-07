@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod/v4";
+import { z } from "zod";
 import {
   Form,
   FormControl,
@@ -25,7 +25,7 @@ import { SignUp } from "@/server/auth";
 const formSchema = z
   .object({
     name: z.string().min(4),
-    email: z.email({
+    email: z.string().email({
       message: "Veuillez entrer une adresse email valide",
     }),
     password: z.string().min(8, {
@@ -43,7 +43,7 @@ export function SignUpForm({
   ...props
 }: React.ComponentProps<"div">) {
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema as any),
+    resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -75,8 +75,11 @@ export function SignUpForm({
         });
         console.log(response.error);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.log("Erreur d'inscription: ", error);
+      toast.error("Error !", {
+        description: "Oops ! Something went wrong.",
+      });
     } finally {
       setIsLoading(false);
     }

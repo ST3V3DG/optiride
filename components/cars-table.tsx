@@ -2,14 +2,10 @@
 
 import { DataTable } from "@/app/dashboard/cars/data-table";
 import { getColumns } from "@/app/dashboard/cars/columns";
-import { Card, CardContent } from "@/components/ui/card";
 import NoData from "./no-data";
 import { useState } from "react";
 import { type CarWithDriverName } from "@/lib/types";
-
-interface CarsTableProps {
-  initialCars: CarWithDriverName[];
-}
+import { type CarsTableProps } from "@/lib/types";
 
 export default function CarsTable({ initialCars }: CarsTableProps) {
   const [data, setData] = useState<CarWithDriverName[]>(initialCars);

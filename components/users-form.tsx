@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { Eye, EyeOff, Link } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 // import {
 //   Select,
 //   SelectContent,
@@ -28,7 +28,6 @@ import { toast } from "sonner";
 // import { Checkbox } from "./ui/checkbox";
 import { createUser, updateUser } from "@/server/users";
 import Loader from "./loader";
-import { User } from "@/db/schema"
 import { UserFormProps } from "@/lib/types";
 
 // Base schema for common fields
@@ -42,7 +41,7 @@ const baseFormSchema = z.object({
   // phone: z.string().min(9, {
   //   message: "Phone must be at least 9 characters.",
   // }),
-  email: z.email(),
+  email: z.string().email(),
   // role: z.enum(["user", "driver", "admin"], {
   //   message: "Type must be one of: user, driver, admin.",
   // }),
@@ -70,26 +69,33 @@ export default function UsersForm({ data, operation }: UserFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Define form values type
+  type FormValues = {
+    name: string;
+    email: string;
+    password?: string;
+  };
+
   // Use the appropriate schema based on operation
-  const formSchema =
-    operation === "create" ? createFormSchema : updateFormSchema;
+  const formSchema = operation === "create" ? createFormSchema : updateFormSchema;
 
   // 1. Define your form.
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema as any),
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    mode: "onChange", // Validate on change
+    reValidateMode: "onChange", // Re-validate on change
+    criteriaMode: "all", // Collect all errors
+    shouldFocusError: true, // Focus first error field
+    shouldUnregister: true, // Unregister fields when they are removed from the form
     defaultValues: {
-      // nic_passport_number: data?.nic_passport_number ?? "",
       name: data?.name ?? "",
       password: "",
-      // phone: data?.phone ?? "",
       email: data?.email ?? "",
-      // role: data?.role ?? undefined,
-      // validated: data?.validated ?? false,
     },
   });
 
   // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: FormValues) {
     setIsSubmitting(true);
 
     try {
@@ -144,15 +150,13 @@ export default function UsersForm({ data, operation }: UserFormProps) {
           }
         }
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error(
         `Error ${operation === "create" ? "creating" : "updating"} user:`,
         error
       );
-      toast("Error!", {
-        description: `Failed to ${
-          operation === "create" ? "create" : "update"
-        } user. Please try again.`,
+      toast.error("Error !", {
+        description: "Oops ! Something went wrong.",
       });
     } finally {
       setIsSubmitting(false);
@@ -167,25 +171,6 @@ export default function UsersForm({ data, operation }: UserFormProps) {
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-8 grid grid-cols-1 md:grid-cols-2 gap-4"
       >
-        {/* <FormField
-          control={form.control}
-          name="nic_passport_number"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>NIC/Passport</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Enter the ID card or your passport number"
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>
-                This should be your ID card or your passport number.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        /> */}
 
         <FormField
           control={form.control}
@@ -236,23 +221,6 @@ export default function UsersForm({ data, operation }: UserFormProps) {
           )}
         />
 
-        {/* <FormField
-          control={form.control}
-          name="phone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Phone</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter the user phone number" {...field} />
-              </FormControl>
-              <FormDescription>
-                This is the personal phone number.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        /> */}
-
         <FormField
           control={form.control}
           name="email"
@@ -269,54 +237,6 @@ export default function UsersForm({ data, operation }: UserFormProps) {
             </FormItem>
           )}
         />
-
-        {/* <FormField
-          control={form.control}
-          name="role"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Type</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl className="w-full">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a verified email to display" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="client">Client</SelectItem>
-                  <SelectItem value="driver">Driver</SelectItem>
-                  <SelectItem value="admin">Admin</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormDescription>Choose the user role.</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        /> */}
-
-        {/* <FormField
-          control={form.control}
-          name="validated"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md p-4 pt-0 md:col-span-2">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                  id="validated"
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel htmlFor="validated" className="cursor-pointer">
-                  Mark the account as validated
-                </FormLabel>
-                <FormDescription>
-                  Validated accounts have full access to the system.
-                </FormDescription>
-              </div>
-            </FormItem>
-          )}
-        /> */}
 
         <Button
           className="float-right hover:cursor-pointer text-white md:col-span-2"

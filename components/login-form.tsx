@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod/v4";
+import { z } from "zod";
 import {
   Form,
   FormControl,
@@ -21,10 +21,9 @@ import Loader from "@/components/loader";
 import { LogIn } from "@/server/auth";
 import { toast } from "sonner";
 import { useSearchParams, useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth-client";
 
 const formSchema = z.object({
-  email: z.email(),
+  email: z.string().email(),
   password: z.string(),
 });
 
@@ -33,7 +32,7 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema as any),
+    resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -63,10 +62,10 @@ export function LoginForm({
         console.log(response);
         form.reset({email});
       }
-    } catch (error: any) {
+    } catch (error) {
       console.log("Erreur d'inscription: ", error);
       toast.error("Error !", {
-        description: error.message,
+        description: "Oops ! Something went wrong.",
       });
     }
     setIsLoading(false);

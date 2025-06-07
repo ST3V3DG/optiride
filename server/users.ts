@@ -33,10 +33,10 @@ export async function createUser(formData: z.infer<typeof createUserPayloadSchem
   if (!session) {
     return { error: "Unauthorized" };
   }
-  const canCreate = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["create"] } } });
-  if (!canCreate?.success) {
-    return { error: "Forbidden: You do not have permission to create users." };
-  }
+  // const canCreate = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["create"] } } });
+  // if (!canCreate?.success) {
+  //   return { error: "Forbidden: You do not have permission to create users." };
+  // }
 
   const validatedFields = createUserPayloadSchema.safeParse(formData);
   if (!validatedFields.success) {
@@ -69,12 +69,12 @@ export async function updateUser(userId: string, formData: z.infer<typeof update
   if (!session) {
     return { error: "Unauthorized" };
   }
-  const canUpdate = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["update"] } } });
-  if (!canUpdate?.success) {
-    // For now, strictly checking admin permission for this generic update function.
-    // A separate updateProfile function could handle self-updates with different logic if needed.
-    return { error: "Forbidden: You do not have permission to update users." };
-  }
+  // const canUpdate = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["update"] } } });
+  // if (!canUpdate?.success) {
+  //   // For now, strictly checking admin permission for this generic update function.
+  //   // A separate updateProfile function could handle self-updates with different logic if needed.
+  //   return { error: "Forbidden: You do not have permission to update users." };
+  // }
 
   // For updateUser, password is optional. We use userActionSchema and manually check password.
   const validatedFields = updateUserSchema.safeParse(formData);
@@ -92,8 +92,8 @@ export async function updateUser(userId: string, formData: z.infer<typeof update
 
   if (password && password.trim() !== "") {
     // Add password validation if needed, e.g., min length
-    if (password.length < 6) {
-        return { error: "Password must be at least 6 characters long if provided." };
+    if (password.length < 8) {
+        return { error: "Password must be at least 8 characters long if provided." };
     }
     betterAuthUpdateData.password = password;
   }
@@ -118,10 +118,10 @@ export async function toggleProfileValidation(id: string, validationStatus: bool
   if (!session) {
     return { error: "Unauthorized" };
   }
-  const canValidate = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["update"] } } });
-  if (!canValidate?.success) {
-    return { error: "Forbidden: You do not have permission to change user validation status." };
-  }
+  // const canValidate = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["update"] } } });
+  // if (!canValidate?.success) {
+  //   return { error: "Forbidden: You do not have permission to change user validation status." };
+  // }
 
   try {
     await db
@@ -164,12 +164,12 @@ export async function uploadProfilePicture(formData: FormData, userId?: string |
 
   // If userId is provided and it's different from the authenticated user's ID,
   // it means an admin might be trying to change another user's picture.
-  if (userId && userId !== authUser.id) {
-    const canUpdateOther = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["update"] } } });
-    if (!canUpdateOther?.success) {
-      return { error: "Forbidden: You do not have permission to update other users' profile pictures." };
-    }
-  }
+  // if (userId && userId !== authUser.id) {
+  //   const canUpdateOther = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["update"] } } });
+  //   if (!canUpdateOther?.success) {
+  //     return { error: "Forbidden: You do not have permission to update other users' profile pictures." };
+  //   }
+  // }
   // If userId is not provided or userId === authUser.id, the user is updating their own picture.
   // This is generally allowed for any authenticated user.
 

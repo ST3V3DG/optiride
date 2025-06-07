@@ -15,7 +15,7 @@ const sizeMap = {
 
 export default function Loader({
   size = "lg",
-  variant = "light",
+  // variant = "light",
   className,
 }: LoaderProps) {
   return (

@@ -3,14 +3,14 @@
 import { z } from "zod";
 import { db } from "@/db/db";
 import { users, cars } from "@/db/schema";
-import type { NewCar } from "@/db/schema";
-import { eq, sql, and } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { CarComfort } from "@/lib/types";
 
 const carActionSchema = z.object({
-  driverId: z.number(),
+  driverId: z.coerce.number(),
   brand: z.string().min(1, "Brand is required"),
   model: z.string().min(1, "Model is required"),
   year: z.coerce.number().min(1900, "Invalid year").max(new Date().getFullYear() + 1, "Invalid year"),
@@ -18,8 +18,6 @@ const carActionSchema = z.object({
   registration: z.string().min(1, "Registration is required"),
   available_seats: z.coerce.number().min(1, "At least one seat").max(100),
 });
-
-type CarComfort = "standard" | "premium" | "luxury";
 
 export async function createCar(formData: z.infer<typeof carActionSchema>) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -32,26 +30,26 @@ export async function createCar(formData: z.infer<typeof carActionSchema>) {
     return { error: "Invalid fields", details: validatedFields.error.flatten() };
   }
 
-  const canCreateAnyCar = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { car: ["create"] } } });
+  // const canCreateAnyCar = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { car: ["create"] } } });
 
-  if (!canCreateAnyCar?.success) {
-    // Not an admin, check if driver is creating for themselves
-    const isDriver = session.user.role === 'driver';
-    // Ensure session.user.id (string) is compared correctly with validatedFields.data.driverId (number)
-    if (!(isDriver && String(validatedFields.data.driverId) === String(session.user.id))) {
-      return { error: "Forbidden: You do not have permission to create this car." };
-    }
-  }
+  // if (!canCreateAnyCar?.success) {
+  //   // Not an admin, check if driver is creating for themselves
+  //   const isDriver = session.user.role === 'driver';
+  //   // Ensure session.user.id (string) is compared correctly with validatedFields.data.driverId (number)
+  //   if (!(isDriver && String(validatedFields.data.driverId) === String(session.user.id))) {
+  //     return { error: "Forbidden: You do not have permission to create this car." };
+  //   }
+  // }
 
   try {
     await db.insert(cars).values({
-      driverId: Number(validatedFields.data.driverId),
-      brand: String(validatedFields.data.brand),
-      model: String(validatedFields.data.model),
-      year: String(validatedFields.data.year),
+      driverId: validatedFields.data.driverId,
+      brand: validatedFields.data.brand,
+      model: validatedFields.data.model,
+      year: validatedFields.data.year,
       comfort: validatedFields.data.comfort as CarComfort | undefined,
-      registration: String(validatedFields.data.registration),
-      available_seats: Number(validatedFields.data.available_seats),
+      registration: validatedFields.data.registration,
+      available_seats: validatedFields.data.available_seats,
       createdAt: sql`NOW()`,
       updatedAt: sql`NOW()`,
     }).execute();
@@ -75,9 +73,9 @@ export async function updateCar(carId: number, formData: z.infer<typeof carActio
     return { error: "Invalid fields", details: validatedFields.error.flatten() };
   }
 
-  const canUpdateAnyCar = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { car: ["update"] } } });
+  // const canUpdateAnyCar = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { car: ["update"] } } });
 
-  if (!canUpdateAnyCar?.success) {
+  // if (!canUpdateAnyCar?.success) {
     // Not an admin, check if driver is updating their own car
     const carToUpdateResult = await db.select().from(cars).where(eq(cars.id, carId)).limit(1);
     if (!carToUpdateResult[0]) {
@@ -85,25 +83,25 @@ export async function updateCar(carId: number, formData: z.infer<typeof carActio
     }
     const carToUpdate = carToUpdateResult[0];
 
-    const isDriver = session.user.role === 'driver';
+    const isDriver = (session.user.role === 'driver') || (session.user.role === 'admin');
     // Ensure session.user.id (string) is compared correctly with driverId (number)
     if (!(isDriver &&
           String(carToUpdate.driverId) === String(session.user.id) &&
           String(validatedFields.data.driverId) === String(session.user.id))) {
       return { error: "Forbidden: You do not have permission to update this car or change its driver." };
     }
-  }
+  // }
 
   try {
     const updateData = {
       driverId: validatedFields.data.driverId,
       brand: validatedFields.data.brand,
       model: validatedFields.data.model,
-      year: String(validatedFields.data.year),
+      year: validatedFields.data.year,
       comfort: validatedFields.data.comfort as CarComfort | undefined,
       registration: validatedFields.data.registration,
       available_seats: validatedFields.data.available_seats,
-      updatedAt: new Date()
+      updatedAt: sql`NOW()`
     };
 
     await db.update(cars)

@@ -11,9 +11,10 @@ import UsersTable from "@/components/users-table";
 import { PageHeader } from "@/components/page-header";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+// import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { NavUserProps } from "@/lib/types";
+import Link from "next/link";
 
 // Helper function to fetch users - this runs on the server
 async function getUsers(): Promise<User[]> {
@@ -39,10 +40,10 @@ export default async function Page() {
     headers: await headers(),
   });
   
-  const canViewPage = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["read"] } } });
-  if (!canViewPage?.success) {
-    redirect('/dashboard');
-  }
+  // const canViewPage = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["read"] } } });
+  // if (!canViewPage?.success) {
+  //   redirect('/dashboard');
+  // }
 
   const initialUsers = await getUsers();
   
@@ -54,15 +55,15 @@ export default async function Page() {
     };
   
     
-  const canCreateUsers = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["create"] } } });
+  // const canCreateUsers = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["create"] } } });
 
   const pageHeaderActions = (
     <div className="flex items-center gap-2">
-      {canCreateUsers?.success && (
+      {/* {canCreateUsers?.success && ( */}
         <Button asChild>
-          <a href="/dashboard/users/create">Create User</a>
+          <Link className="text-white" href="/dashboard/users/create">Create User</Link>
         </Button>
-      )}
+      {/* )} */}
       <ThemeToggle />
     </div>
   );

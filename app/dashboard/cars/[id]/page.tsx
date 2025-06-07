@@ -11,7 +11,7 @@ import { CarWithDriverName } from "@/lib/types";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NavUserProps } from "@/lib/types";
-import { redirect } from "next/navigation";
+import { toast } from "sonner";
 
 async function getCar(id: string): Promise<CarWithDriverName | null> {
   try {
@@ -27,6 +27,9 @@ async function getCar(id: string): Promise<CarWithDriverName | null> {
     return results[0] as CarWithDriverName;
   } catch (error) {
     console.error("Error fetching car:", error);
+    toast.error("Error !", {
+      description: "Oops ! Something went wrong.",
+    });
     return null;
   }
 }
@@ -49,29 +52,25 @@ export default async function Page({
     image: session?.user?.image || null,
   };
 
-  if (!session) {
-    redirect('/login');
-  }
-  if (!car) {
-    // Already handled (renders "CarDetails" only if car exists)
-    // but good to be explicit that session checks come after car existence
-    // No redirect here as the component handles car not found state.
-  }
+  // const canReadCar = await auth.api.hasPermission({
+  //   headers: await headers(),
+  //   body: { permissions: { car: ["read"] } },
+  // });
 
-  const canReadCar = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { car: ["read"] } } });
-
-  if (canReadCar?.granted) {
+  // if (canReadCar?.success) {
     // Admin or User (client) with general 'read' permission can view.
     // If user is a driver, they must own the car to view its details page (unless they are admin).
-    // @ts-ignore session.user.id should be string for comparison if car.driverId is string
-    if (session.user?.role === 'driver' && String(car?.driverId) !== session.user.id && session.user?.role !== 'admin') {
-       // If car is null here because it wasn't found, car?.driverId will be undefined, which is fine.
-      redirect('/dashboard/cars'); // Forbidden, not their car
-    }
-  } else {
-    // No general 'read' permission
-    redirect('/dashboard/cars'); // Forbidden
-  }
+    // const isDriver = session?.user?.role === "driver";
+    // const isAdmin = session?.user?.role === "admin";
+    // const isCarOwner = String(car?.driverId) === session?.user?.id;
+
+    // if (isDriver && !isCarOwner && !isAdmin) {
+    //   redirect("/dashboard/cars"); // Forbidden, not their car and not admin
+    // }
+  // } else {
+  //   // No general 'read' permission
+  //   redirect("/dashboard/cars"); // Forbidden
+  // }
 
   return (
     <SidebarProvider>
