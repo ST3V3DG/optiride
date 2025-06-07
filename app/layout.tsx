@@ -5,7 +5,7 @@ import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "OptiRide Application",
-  description: "Make rides a plaisure and fun.",
+  description: "Make rides a pleasure and fun.",
 };
 
 export default function RootLayout({
