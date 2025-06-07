@@ -1,8 +1,7 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   boolean,
   bigint,
-  char,
   date,
   decimal,
   index,
@@ -10,9 +9,11 @@ import {
   mysqlTable,
   text,
   time,
-  datetime,
+  timestamp,
   uniqueIndex,
   varchar,
+  year,
+  int,
 } from "drizzle-orm/mysql-core";
 
 // --- Auth Tables ---
@@ -27,15 +28,15 @@ export const users = mysqlTable(
     image: text("image"),
     banned: boolean("banned").notNull().default(false),
     banReason: varchar("ban_reason", { length: 255 }),
-    banExpires: datetime("ban_expires", { mode: "date", fsp: 3 }),
+    banExpires: timestamp("ban_expires", { mode: "string" }),
     nic_passport_number: varchar("nic_passport_number", { length: 255 }).unique(),
     phone: varchar("phone", { length: 255 }).unique(),
     nic_passport_picture_1: varchar("nic_passport_picture_1", { length: 255 }),
     nic_passport_picture_2: varchar("nic_passport_picture_2", { length: 255 }),
     role: mysqlEnum("role", ["user", "driver", "admin"]).default("user"),
     validated: boolean("validated").notNull().default(false),
-    createdAt: datetime("created_at", { mode: "date", fsp: 3 }).notNull().default(new Date()),
-    updatedAt: datetime("updated_at", { mode: "date", fsp: 3 }).notNull().default(new Date()).$onUpdateFn(() => new Date()),
+    createdAt: timestamp("created_at", { mode: "string" }).notNull().default(sql`now()`),
+    updatedAt: timestamp("updated_at", { mode: "string" }).notNull().default(sql`now()`).$onUpdateFn(() => sql`now()`),
   }
 );
 
@@ -47,10 +48,10 @@ export const organizations = mysqlTable(
     slug: varchar("slug", { length: 255 }).notNull().unique(),
     logo: text("logo"),
     metadata: text("metadata"),
-    createdAt: datetime("created_at", { mode: "date", fsp: 3 }).default(new Date()).notNull(),
-    updatedAt: datetime("updated_at", { mode: "date", fsp: 3 })
-      .default(new Date())
-      .$onUpdateFn(() => new Date())
+    createdAt: timestamp("created_at", { mode: "string" }).default(sql`now()`).notNull(),
+    updatedAt: timestamp("updated_at", { mode: "string" })
+      .default(sql`now()`)
+      .$onUpdateFn(() => sql`now()`)
       .notNull(),
   }
 );
@@ -66,12 +67,12 @@ export const members = mysqlTable(
       .notNull()
       .references(() => organizations.id, { onDelete: "cascade" }),
     role: mysqlEnum("role", ["user", "driver", "admin"]).default("user"),
-    joinedAt: datetime("joined_at", { mode: "date", fsp: 3 }).default(new Date()),
-    leftAt: datetime("left_at", { mode: "date", fsp: 3 }),
-    createdAt: datetime("created_at", { mode: "date", fsp: 3 }).default(new Date()).notNull(),
-    updatedAt: datetime("updated_at", { mode: "date", fsp: 3 })
-      .default(new Date())
-      .$onUpdateFn(() => new Date())
+    joinedAt: timestamp("joined_at", { mode: "string" }).default(sql`now()`),
+    leftAt: timestamp("left_at", { mode: "string" }),
+    createdAt: timestamp("created_at", { mode: "string" }).default(sql`now()`).notNull(),
+    updatedAt: timestamp("updated_at", { mode: "string" })
+      .default(sql`now()`)
+      .$onUpdateFn(() => sql`now()`)
       .notNull(),
   },
   (table) => ({
@@ -105,11 +106,11 @@ export const invitations = mysqlTable(
     ])
       .default("pending")
       .notNull(),
-    expiresAt: datetime("expires_at", { mode: "date", fsp: 3 }),
-    createdAt: datetime("created_at", { mode: "date", fsp: 3 }).default(new Date()).notNull(),
-    updatedAt: datetime("updated_at", { mode: "date", fsp: 3 })
-      .default(new Date())
-      .$onUpdateFn(() => new Date())
+    expiresAt: timestamp("expires_at", { mode: "string" }),
+    createdAt: timestamp("created_at", { mode: "string" }).default(sql`now()`).notNull(),
+    updatedAt: timestamp("updated_at", { mode: "string" })
+      .default(sql`now()`)
+      .$onUpdateFn(() => sql`now()`)
       .notNull(),
   },
   (table) => ({
@@ -133,9 +134,9 @@ export const sessions = mysqlTable("sessions", {
     unsigned: true,
   }).references(() => organizations.id, { onDelete: "set null" }),
   impersonatedBy: varchar("impersonated_by", { length: 255 }),
-  expiresAt: datetime("expires_at", { mode: "date", fsp: 3 }).notNull(),
-  createdAt: datetime("created_at", { mode: "date", fsp: 3 }).notNull().default(new Date()),
-  updatedAt: datetime("updated_at", { mode: "date", fsp: 3 }).notNull().default(new Date()).$onUpdateFn(() => new Date()),
+  expiresAt: timestamp("expires_at", { mode: "string" }).notNull(),
+  createdAt: timestamp("created_at", { mode: "string" }).notNull().default(sql`now()`),
+  updatedAt: timestamp("updated_at", { mode: "string" }).notNull().default(sql`now()`).$onUpdateFn(() => sql`now()`),
 });
 
 export const accounts = mysqlTable("accounts", {
@@ -150,25 +151,25 @@ providerId: varchar("provider_id", { length: 255 })
   accessToken: text("access_token"),
   refreshToken: text("refresh_token"),
   idToken: text("id_token"),
-  accessTokenExpiresAt: datetime("access_token_expires_at", {
-    mode: "date", fsp: 3,
+  accessTokenExpiresAt: timestamp("access_token_expires_at", {
+    mode: "string",
   }),
-  refreshTokenExpiresAt: datetime("refresh_token_expires_at", {
-    mode: "date", fsp: 3,
+  refreshTokenExpiresAt: timestamp("refresh_token_expires_at", {
+    mode: "string",
   }),
   scope: text("scope"),
   password: text("password"),
-  createdAt: datetime("created_at", { mode: "date", fsp: 3 }).notNull().default(new Date()),
-  updatedAt: datetime("updated_at", { mode: "date", fsp: 3 }).notNull().default(new Date()).$onUpdateFn(() => new Date()),
+  createdAt: timestamp("created_at", { mode: "string" }).notNull().default(sql`now()`),
+  updatedAt: timestamp("updated_at", { mode: "string" }).notNull().default(sql`now()`).$onUpdateFn(() => sql`now()`),
 });
 
 export const verifications = mysqlTable("verifications", {
   id: bigint("id", { mode: "number", unsigned: true }).primaryKey().autoincrement().notNull(),
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
-  expiresAt: datetime("expires_at", { mode: "date", fsp: 3 }).notNull(),
-  createdAt: datetime("created_at", { mode: "date", fsp: 3 }).notNull().default(new Date()),
-  updatedAt: datetime("updated_at", { mode: "date", fsp: 3 }).notNull().default(new Date()).$onUpdateFn(() => new Date()),
+  expiresAt: timestamp("expires_at", { mode: "string" }).notNull(),
+  createdAt: timestamp("created_at", { mode: "string" }).notNull().default(sql`now()`),
+  updatedAt: timestamp("updated_at", { mode: "string" }).notNull().default(sql`now()`).$onUpdateFn(() => sql`now()`),
 });
 
 // --- Application Tables ---
@@ -176,8 +177,8 @@ export const verifications = mysqlTable("verifications", {
 export const cities = mysqlTable("cities", {
   id: bigint("id", { mode: "number", unsigned: true }).primaryKey().autoincrement().notNull(),
   name: varchar("name", { length: 255 }),
-  createdAt: datetime("created_at", { mode: "date", fsp: 3 }).notNull().default(new Date()),
-  updatedAt: datetime("updated_at", { mode: "date", fsp: 3 }).notNull().default(new Date()).$onUpdateFn(() => new Date()),
+  createdAt: timestamp("created_at", { mode: "string" }).notNull().default(sql`now()`),
+  updatedAt: timestamp("updated_at", { mode: "string" }).notNull().default(sql`now()`).$onUpdateFn(() => sql`now()`),
 });
 
 export const cars = mysqlTable("cars", {
@@ -187,12 +188,12 @@ export const cars = mysqlTable("cars", {
     .notNull(),
   brand: varchar("brand", { length: 255 }),
   model: varchar("model", { length: 255 }),
-  year: char("year", { length: 4 }),
+  year: year("year"),
   registration: varchar("registration", { length: 255 }),
-  available_seats: bigint("available_seats", { mode: "number", unsigned: true }),
+  available_seats: int("available_seats"),
   comfort: mysqlEnum("comfort", ["standard", "premium", "luxury"]),
-  createdAt: datetime("created_at", { mode: "date", fsp: 3 }).notNull().default(new Date()),
-  updatedAt: datetime("updated_at", { mode: "date", fsp: 3 }).notNull().default(new Date()).$onUpdateFn(() => new Date()),
+  createdAt: timestamp("created_at", { mode: "string" }).notNull().default(sql`now()`),
+  updatedAt: timestamp("updated_at", { mode: "string" }).notNull().default(sql`now()`).$onUpdateFn(() => sql`now()`),
 });
 
 export const rides = mysqlTable("rides", {
@@ -228,8 +229,8 @@ export const rides = mysqlTable("rides", {
   }),
   description: text("description"),
   status: mysqlEnum("status", ["opened", "completed", "canceled", "full"]),
-  createdAt: datetime("created_at", { mode: "date", fsp: 3 }).notNull().default(new Date()),
-  updatedAt: datetime("updated_at", { mode: "date", fsp: 3 }).notNull().default(new Date()).$onUpdateFn(() => new Date()),
+  createdAt: timestamp("created_at", { mode: "string" }).notNull().default(sql`now()`),
+  updatedAt: timestamp("updated_at", { mode: "string" }).notNull().default(sql`now()`).$onUpdateFn(() => sql`now()`),
 });
 
 // --- Relations ---
