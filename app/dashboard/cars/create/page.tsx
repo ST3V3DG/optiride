@@ -18,10 +18,7 @@ export default async function Page() {
     email: session?.user?.email || null,
     image: session?.user?.image || null,
   };
-<<<<<<< HEAD
-=======
-
->>>>>>> fix-build-errors
+  
   // const canCreateCar = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { car: ["create"] } } });
   // if (!canCreateCar?.success) {
   //   redirect('/dashboard/cars'); // Or to a more general access-denied page

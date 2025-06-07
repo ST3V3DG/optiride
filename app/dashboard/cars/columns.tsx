@@ -193,15 +193,9 @@ export const getColumns = (
       // const canUpdate = authClient.organization.checkRolePermission({ permissions: { car: ["update"] } });
       // const canDelete = authClient.organization.checkRolePermission({ permissions: { car: ["delete"] } });
 
-<<<<<<< HEAD
       // Determine if the edit/delete button should be shown
       // Admin can edit/delete if they have the permission.
       // Driver can edit/delete if they have the permission AND are the owner.
-=======
-      // // Determine if the edit/delete button should be shown
-      // // Admin can edit/delete if they have the permission.
-      // // Driver can edit/delete if they have the permission AND are the owner.
->>>>>>> fix-build-errors
       // const showEditButton = canUpdate && (currentUserRole === 'admin' || (currentUserRole === 'driver' && isOwner));
       // const showDeleteButton = canDelete && (currentUserRole === 'admin' || (currentUserRole === 'driver' && isOwner));
 
@@ -234,13 +228,8 @@ export const getColumns = (
                   Edit
                 </Link>
               </DropdownMenuItem>
-<<<<<<< HEAD
             {/* )} */}
             {/* {showDeleteButton && ( */}
-=======
-            {/* )}
-            {showDeleteButton && ( */}
->>>>>>> fix-build-errors
               <DropdownMenuItem
                 onSelect={(e) => e.preventDefault()}
                 className="p-0 focus:bg-transparent"

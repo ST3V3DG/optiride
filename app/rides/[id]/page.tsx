@@ -102,11 +102,7 @@ export default async function Page({
                 </div>
                 <div className="flex items-center">
                   <span className="text-xl mr-3">🐾</span>
-<<<<<<< HEAD
                   Je préfère ne pas voyager en compagnie d`&apos;animaux
-=======
-                  Je préfère ne pas voyager en compagnie d&apos;animaux
->>>>>>> fix-build-errors
                 </div>
                 <hr className="my-4" />
                 <div className="flex items-center">

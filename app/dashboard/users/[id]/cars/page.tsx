@@ -4,7 +4,6 @@ import {
   SidebarProvider,
   SidebarInset,
 } from "@/components/ui/sidebar";
-<<<<<<< HEAD
 import { PageHeader } from "@/components/page-header";
 import CarsTable from "@/components/cars-table";
 import { cars, User, users } from "@/db/schema";
@@ -23,18 +22,6 @@ export async function generateStaticParams() {
   }));
 }
 
-=======
-import { cars, users } from "@/db/schema";
-import { db } from "@/db/db";
-import { eq } from "drizzle-orm";
-import { CarWithDriverName } from "@/lib/types";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { NavUserProps } from "@/lib/types";
-import CarsTable from "@/components/cars-table";
-import { PageHeader } from "@/components/page-header";
-
->>>>>>> fix-build-errors
 async function getCars(id: string): Promise<CarWithDriverName[]> {
   try {
     const results = await db
@@ -69,11 +56,8 @@ export default async function Page({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-<<<<<<< HEAD
 
   // On récupère la session comme avant
-=======
->>>>>>> fix-build-errors
   const session = await auth.api.getSession({
     headers: await headers(),
   });

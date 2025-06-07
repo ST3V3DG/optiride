@@ -80,7 +80,6 @@ export default function UsersForm({ data, operation }: UserFormProps) {
   const formSchema = operation === "create" ? createFormSchema : updateFormSchema;
 
   // 1. Define your form.
-<<<<<<< HEAD
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     mode: "onChange", // Validate on change
@@ -88,10 +87,6 @@ export default function UsersForm({ data, operation }: UserFormProps) {
     criteriaMode: "all", // Collect all errors
     shouldFocusError: true, // Focus first error field
     shouldUnregister: true, // Unregister fields when they are removed from the form
-=======
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
->>>>>>> fix-build-errors
     defaultValues: {
       name: data?.name ?? "",
       password: "",

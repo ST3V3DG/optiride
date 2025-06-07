@@ -77,15 +77,9 @@ export function SignUpForm({
         form.reset({name, email});
       }
     } catch (error) {
-<<<<<<< HEAD
       console.log("Erreur d'inscription: ", error);
       toast.error("Error !", {
         description: "Oops ! Something went wrong.",
-=======
-      console.error("Erreur d'inscription: ", error);
-      toast.error("Error !", {
-        description: error instanceof Error ? error.message : 'An unknown error occurred',
->>>>>>> fix-build-errors
       });
     } finally {
       setIsLoading(false);

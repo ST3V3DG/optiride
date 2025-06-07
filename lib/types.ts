@@ -33,7 +33,6 @@ export type RidesListProps = {
 export type UserFormProps = {
   data?: User;
   operation: "create" | "update";
-<<<<<<< HEAD
 }
 
 export type SearchRidesProps = {
@@ -44,9 +43,6 @@ export type BreadcrumbType = {
   label: string;
   href: string;
 }
-=======
-};
->>>>>>> fix-build-errors
 
 export type Option = {
   id: number;
@@ -57,10 +53,4 @@ export type CarsTableProps = {
   initialCars: CarWithDriverName[];
 }
 
-<<<<<<< HEAD
 export type CarComfort = "standard" | "premium" | "luxury";
-=======
-export type RidesClientProps = {
-  initialRides: RideWithNames[];
-}
->>>>>>> fix-build-errors

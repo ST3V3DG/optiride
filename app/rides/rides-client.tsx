@@ -4,9 +4,9 @@ import { useState, useEffect } from "react";
 import { RideWithNames } from "@/lib/types";
 import RidesList from "@/components/rides-list";
 import SearchRides from "@/components/search-rides";
-import { RidesClientProps } from "@/lib/types";
+import { RidesListProps } from "@/lib/types";
 
-export default function RidesClient({ initialRides }: RidesClientProps) {
+export default function RidesClient({ initialRides }: RidesListProps) {
   const [rides, setRides] = useState<RideWithNames[]>(initialRides);
 
   useEffect(() => {

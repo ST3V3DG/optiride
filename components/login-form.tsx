@@ -64,11 +64,7 @@ export function LoginForm({
     } catch (error) {
       console.log("Erreur d'inscription: ", error);
       toast.error("Error !", {
-<<<<<<< HEAD
         description: "Oops ! Something went wrong.",
-=======
-        description: error as string,
->>>>>>> fix-build-errors
       });
     }
     setIsLoading(false);

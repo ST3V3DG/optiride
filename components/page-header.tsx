@@ -12,15 +12,10 @@ import { Fragment, type ReactNode } from "react";
 import { BreadcrumbType } from "@/lib/types";
 
 
-<<<<<<< HEAD
 export function PageHeader({title, breadcrumbs, actions }:{title: string, breadcrumbs: BreadcrumbType[], actions: ReactNode}) {
 
   console.log(title);
 
-=======
-export function PageHeader({title, breadcrumbs, actions }:{title: string, breadcrumbs: Breadcrumb[], actions: ReactNode}) {
-  console.log(title);
->>>>>>> fix-build-errors
   return (
     <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 justify-between">
       <div className="flex items-center gap-2 px-4">

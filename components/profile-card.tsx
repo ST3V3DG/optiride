@@ -37,10 +37,6 @@ export default function ProfileCard({ user }: { user: User }) {
     return <NoData />;
   }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> fix-build-errors
   const handleFileReadyForUpload = (file: File | null) => {
     setCroppedFileToUpload(file);
   };
@@ -192,17 +188,10 @@ export default function ProfileCard({ user }: { user: User }) {
           <Separator />
           <CardContent className="flex flex-col gap-4 p-4">
             <div className="border rounded-lg border-accent-foreground/50 aspect-video bg-muted flex items-center justify-center text-sm text-muted-foreground">
-<<<<<<< HEAD
               {user.nic_passport_picture_1 ? <Image width={500} height={500} src={user.nic_passport_picture_1 as string} alt="ID Recto" className="object-contain w-full h-full"/> : "Recto ID (non fourni)"}
             </div>
             <div className="border rounded-lg border-accent-foreground/50 aspect-video bg-muted flex items-center justify-center text-sm text-muted-foreground">
             {user.nic_passport_picture_2 ? <Image width={500} height={500} src={user.nic_passport_picture_2 as string} alt="ID Verso" className="object-contain w-full h-full"/> : "Verso ID (non fourni)"}
-=======
-              {user.nic_passport_picture_1 ? <Image src={user.nic_passport_picture_1 as string} alt="ID Recto" className="object-contain w-full h-full"/> : "Recto ID (non fourni)"}
-            </div>
-            <div className="border rounded-lg border-accent-foreground/50 aspect-video bg-muted flex items-center justify-center text-sm text-muted-foreground">
-            {user.nic_passport_picture_2 ? <Image src={user.nic_passport_picture_2 as string} alt="ID Verso" className="object-contain w-full h-full"/> : "Verso ID (non fourni)"}
->>>>>>> fix-build-errors
             </div>
           </CardContent>
         </Card>

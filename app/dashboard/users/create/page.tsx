@@ -9,20 +9,13 @@ import UsersCreate from "@/components/users-create";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NavUserProps } from "@/lib/types";
-<<<<<<< HEAD
 import { PageHeader } from "@/components/page-header";
-=======
->>>>>>> fix-build-errors
 
 export default async function Page() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
-<<<<<<< HEAD
   
-=======
-
->>>>>>> fix-build-errors
   // Check permission to create users
   // const canCreateUsers = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["create"] } } });
   // if (!canCreateUsers?.success) {

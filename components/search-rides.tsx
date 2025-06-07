@@ -7,19 +7,11 @@ import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import Loader from "@/components/loader";
 import { City, Ride, User } from "@/db/schema";
-<<<<<<< HEAD
 import {RideWithNames, SearchParams, SearchRidesProps} from "@/lib/types";
 import { getCitiesAction } from "@/server/cities";
 import { getFilteredRides } from "@/server/rides";
 
 
-=======
-import { RideWithNames, SearchParams } from "@/lib/types";
-import { getCitiesAction } from "@/server/cities";
-import { getFilteredRides } from "@/server/rides";
-
-// API function to search rides
->>>>>>> fix-build-errors
 async function searchRides(params: SearchParams): Promise<RideWithNames[]> {
   try {
     const response = await getFilteredRides(
@@ -39,13 +31,6 @@ async function searchRides(params: SearchParams): Promise<RideWithNames[]> {
   }
 }
 
-<<<<<<< HEAD
-=======
-type SearchRidesProps = {
-  onSearch: (rides: RideWithNames[]) => void;
-}
-
->>>>>>> fix-build-errors
 export default function SearchRides({ onSearch }: SearchRidesProps) {
   const [departure_id, setDepartureId] = useState<number | null>(null);
   const [arrival_id, setArrivalId] = useState<number | null>(null);
@@ -78,11 +63,6 @@ export default function SearchRides({ onSearch }: SearchRidesProps) {
     });
     onSearch(results);
 
-<<<<<<< HEAD
-=======
-    // City names are not being used, so we don't need to fetch them
-
->>>>>>> fix-build-errors
     setIsLoading(false);
   };
 
