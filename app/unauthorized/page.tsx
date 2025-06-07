@@ -1,5 +1,6 @@
 // app/unauthorized/page.tsx
 import React from 'react';
+import Link from "next/link";
 
 const UnauthorizedPage = () => {
   return (
@@ -7,7 +8,7 @@ const UnauthorizedPage = () => {
       <h1>Unauthorized Access</h1>
       <p>You do not have the necessary permissions to view this page.</p>
       <p>
-        <a href="/">Go to Homepage</a>
+        <Link href="/">Go to Homepage</Link>
       </p>
     </div>
   );
