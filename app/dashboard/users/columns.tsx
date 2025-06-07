@@ -62,11 +62,10 @@ async function validate({ id, validated, setData }: ValidateProps) {
     }
 
     // La mise à jour optimiste a déjà géré le changement de l'UI.
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error updating validation status:", error);
     toast("Error!", {
       description:
-        error.message ||
         "An unexpected error occurred while updating validation status.",
     });
 

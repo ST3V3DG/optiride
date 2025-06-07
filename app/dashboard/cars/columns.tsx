@@ -14,7 +14,7 @@ import Link from "next/link";
 import { Checkbox } from "@/components/ui/checkbox";
 import DeleteButton from "@/components/delete-button";
 import { CarWithDriverName } from "@/lib/types";
-import { authClient } from "@/lib/auth-client";
+// import { authClient } from "@/lib/auth-client";
 // Assuming better-auth provides useSession through authClient
 // If it's from "next-auth/react", that would be: import { useSession } from "next-auth/react";
 
@@ -141,7 +141,7 @@ export const getColumns = (
       );
     },
     cell: ({ row }) => {
-      return <span>{row.original.number_of_seats + " seat(s)"}</span>;
+      return <span>{row.original.available_seats + " seat(s)"}</span>;
     },
   },
   {
@@ -181,23 +181,23 @@ export const getColumns = (
     header: () => <div className="text-left">Action</div>,
     id: "actions",
     cell: ({ row }) => {
-      const { data: session } = authClient.useSession(); 
+      // const { data: session } = authClient.useSession(); 
       // Note: Adjust session.user.id and session.user.role if better-auth nests these differently
       // e.g., session.user.databaseId or session.user.activeOrganizationRole
-      const currentUserId = session?.user?.id; 
-      const currentUserRole = session?.user?.role; 
+      // const currentUserId = session?.user?.id; 
+      // const currentUserRole = session?.user?.role; 
 
-      const isOwner = String(row.original.driverId) === String(currentUserId);
+      // const isOwner = String(row.original.driverId) === String(currentUserId);
 
       // Check general permission for the action first
-      const canUpdate = authClient.organization.checkRolePermission({ permissions: { car: ["update"] } });
-      const canDelete = authClient.organization.checkRolePermission({ permissions: { car: ["delete"] } });
+      // const canUpdate = authClient.organization.checkRolePermission({ permissions: { car: ["update"] } });
+      // const canDelete = authClient.organization.checkRolePermission({ permissions: { car: ["delete"] } });
 
-      // Determine if the edit/delete button should be shown
-      // Admin can edit/delete if they have the permission.
-      // Driver can edit/delete if they have the permission AND are the owner.
-      const showEditButton = canUpdate && (currentUserRole === 'admin' || (currentUserRole === 'driver' && isOwner));
-      const showDeleteButton = canDelete && (currentUserRole === 'admin' || (currentUserRole === 'driver' && isOwner));
+      // // Determine if the edit/delete button should be shown
+      // // Admin can edit/delete if they have the permission.
+      // // Driver can edit/delete if they have the permission AND are the owner.
+      // const showEditButton = canUpdate && (currentUserRole === 'admin' || (currentUserRole === 'driver' && isOwner));
+      // const showDeleteButton = canDelete && (currentUserRole === 'admin' || (currentUserRole === 'driver' && isOwner));
 
       return (
         <DropdownMenu>
@@ -219,7 +219,7 @@ export const getColumns = (
                 Details
               </Link>
             </DropdownMenuItem>
-            {showEditButton && (
+            {/* {showEditButton && ( */}
               <DropdownMenuItem asChild>
                 <Link
                   className="w-full"
@@ -228,8 +228,8 @@ export const getColumns = (
                   Edit
                 </Link>
               </DropdownMenuItem>
-            )}
-            {showDeleteButton && (
+            {/* )}
+            {showDeleteButton && ( */}
               <DropdownMenuItem
                 onSelect={(e) => e.preventDefault()}
                 className="p-0 focus:bg-transparent"
@@ -246,7 +246,7 @@ export const getColumns = (
                   }}
                 />
               </DropdownMenuItem>
-            )}
+            {/* )} */}
           </DropdownMenuContent>
         </DropdownMenu>
       );

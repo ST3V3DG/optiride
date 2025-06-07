@@ -33,4 +33,17 @@ export type RidesListProps = {
 export type UserFormProps = {
   data?: User;
   operation: "create" | "update";
+};
+
+export type Option = {
+  id: number;
+  label: string;
+}
+
+export type CarsTableProps = {
+  initialCars: CarWithDriverName[];
+}
+
+export type RidesClientProps = {
+  initialRides: RideWithNames[];
 }

@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { Car, TrafficCone, Users } from "lucide-react";
-import { authClient } from "@/lib/auth-client";
 
 import { NavMain } from "@/components/nav-main";
 import NavUserClient from "@/components/nav-user";
@@ -35,7 +34,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
 
   const navMainItems = [
     // Users item - conditional
-    ...(true ? [{
+    {
       title: "Users",
       url: "/dashboard/users",
       icon: Users,
@@ -50,7 +49,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
           url: "/dashboard/users/create",
         },
       ],
-    }] : []),
+    },
     // Rides item - always visible for now
     {
       title: "Rides",

@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,11 +26,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-
-interface Option {
-  id: number;
-  label: string;
-}
+import { Option } from "@/lib/types";
 
 const formSchema = z.object({
   driverId: z.number().min(1, "Driver is required."),
@@ -42,7 +38,7 @@ const formSchema = z.object({
     .max(new Date().getFullYear() + 1, "Year cannot be in the distant future"),
   registration: z.string().min(1, "Registration plate is required."),
   comfort: z.enum(["standard", "premium", "luxury"]).optional(),
-  number_of_seats: z.coerce
+  available_seats: z.coerce
     .number()
     .int()
     .min(1, "Number of seats must be at least 1")
@@ -88,7 +84,7 @@ export default function CarsForm({
   }, [data]);
 
   const form = useForm<FormData>({
-    resolver: zodResolver(formSchema as any),
+    resolver: zodResolver(formSchema),
     defaultValues: {
       driverId: data?.driverId ?? undefined,
       brand: data?.brand ?? "",
@@ -96,7 +92,7 @@ export default function CarsForm({
       year: data?.year ? Number(data.year) : Number(new Date().getFullYear()),
       registration: data?.registration ?? "",
       comfort: data?.comfort ?? "standard",
-      number_of_seats: data?.number_of_seats ?? 1,
+      available_seats: data?.available_seats ?? 1,
     },
   });
 
@@ -138,7 +134,7 @@ export default function CarsForm({
             year: undefined,
             registration: "",
             comfort: "standard",
-            number_of_seats: 1,
+            available_seats: 1,
           });
           setSelectedDriver(undefined);
         }
@@ -251,7 +247,7 @@ export default function CarsForm({
 
           <FormField
             control={form.control}
-            name="number_of_seats"
+            name="available_seats"
             render={({ field }) => (
               <FormItem className="md:col-span-2">
                 <FormLabel>Number of Seats</FormLabel>

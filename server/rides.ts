@@ -5,7 +5,7 @@ import { db } from "@/db/db";
 import { rides, users, cities, cars } from "@/db/schema";
 import { and, eq, getTableColumns, gte, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { RideWithNames } from "../lib/types";
+import { RideWithNames } from "@/lib/types";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
@@ -18,7 +18,7 @@ const rideActionSchema = z.object({
     hour_of_departure: z.string(),
     hour_of_arrival: z.string(),
     duration: z.coerce.number(),
-    number_of_seats: z.coerce.number(),
+    available_seats: z.coerce.number(),
     price: z.coerce.number(),
     carId: z.coerce.number(),
     date: z.date().optional().default(new Date())
@@ -78,13 +78,13 @@ export async function createRide(formData: z.infer<typeof rideActionSchema>) {
       hour_of_arrival: validatedFields.data.hour_of_arrival,
       duration: validatedFields.data.duration,
       price: validatedFields.data.price.toFixed(2),
-      number_of_seats: validatedFields.data.number_of_seats,
+      available_seats: validatedFields.data.available_seats,
       carId: validatedFields.data.carId,
       status: "opened" as const,
       date: validatedFields.data.date
     };
 
-    const result = await db.insert(rides).values(rideData).execute();
+    // const result = await db.insert(rides).values(rideData).execute();
 
     revalidatePath("/dashboard/rides");
     return { success: "Ride created successfully." };
@@ -148,7 +148,7 @@ export async function updateRide(rideId: number, formData: z.infer<typeof rideAc
       hour_of_arrival: validatedFields.data.hour_of_arrival,
       duration: validatedFields.data.duration,
       price: validatedFields.data.price.toFixed(2),
-      number_of_seats: validatedFields.data.number_of_seats,
+      available_seats: validatedFields.data.available_seats,
       carId: validatedFields.data.carId,
       date: validatedFields.data.date,
       updatedAt: sql`NOW()`

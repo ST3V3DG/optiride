@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import getCroppedImg, { urlToFile } from '@/lib/crop-image'; // L'utilitaire créé
 import { RotateCcw } from 'lucide-react'; // Pour un bouton Réinitialiser/Changer
 import { toast } from 'sonner';
+import Image from 'next/image';
 
 interface ImageUploadProps {
   accept?: string;
@@ -51,6 +52,34 @@ export function ImageUpload({
       setDisplayImagePreview(null); // S'assurer de nettoyer si l'URL initiale est retirée
     }
   }, [initialImagePreviewUrl]);
+  
+  const clearSelection = useCallback((notifyParent = true) => {
+    // Révoquer l'URL de l'objet blob si displayImagePreview est un blob
+    if (displayImagePreview && displayImagePreview.startsWith('blob:')) {
+      URL.revokeObjectURL(displayImagePreview);
+    }
+    if (imageSrcToCrop && imageSrcToCrop.startsWith('blob:')) {
+      URL.revokeObjectURL(imageSrcToCrop);
+    }
+
+    setOriginalFile(null);
+    setImageSrcToCrop(null);
+    setDisplayImagePreview(initialImagePreviewUrl);
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setCroppedAreaPixels(null);
+    setIsCroppingModalOpen(false);
+    if (notifyParent) {
+      onFileCropped(null);
+    }
+    fileUploadRef.current?.reset();
+  }, [
+    displayImagePreview,
+    imageSrcToCrop,
+    initialImagePreviewUrl,
+    onFileCropped,
+   fileUploadRef
+ ]);
 
 
   const handleFileSelect = useCallback((selectedFiles: File[]) => {
@@ -73,7 +102,7 @@ export function ImageUpload({
       };
       reader.readAsDataURL(file);
     }
-  }, []);
+  }, [clearSelection]);
 
   const onCropComplete = useCallback((_croppedArea: Area, croppedAreaPixelsValue: Area) => {
     setCroppedAreaPixels(croppedAreaPixelsValue);
@@ -135,29 +164,6 @@ export function ImageUpload({
     }
   };
 
-
-  const clearSelection = (notifyParent = true) => {
-    // Révoquer l'URL de l'objet blob si displayImagePreview est un blob
-    if (displayImagePreview && displayImagePreview.startsWith('blob:')) {
-      URL.revokeObjectURL(displayImagePreview);
-    }
-    if (imageSrcToCrop && imageSrcToCrop.startsWith('blob:')) {
-      URL.revokeObjectURL(imageSrcToCrop);
-    }
-
-    setOriginalFile(null);
-    setImageSrcToCrop(null);
-    setDisplayImagePreview(initialImagePreviewUrl); // Revenir à l'URL initiale ou null
-    setCrop({ x: 0, y: 0 });
-    setZoom(1);
-    setCroppedAreaPixels(null);
-    setIsCroppingModalOpen(false);
-    if (notifyParent) {
-      onFileCropped(null);
-    }
-    fileUploadRef.current?.reset(); // Réinitialiser le FileUpload pour permettre nouvelle sélection
-  };
-
   // Nettoyage des URLs blob à la destruction du composant
   useEffect(() => {
     const currentDisplayImage = displayImagePreview;
@@ -177,7 +183,9 @@ export function ImageUpload({
     <div className="w-full flex flex-col items-center space-y-4">
       {displayImagePreview ? (
         <div className="flex flex-col items-center space-y-3">
-          <img
+          <Image
+          width={500}
+          height={500}
             src={displayImagePreview}
             alt="Prévisualisation"
             className="w-48 h-48 object-cover border rounded-full" // Style pour photo de profil

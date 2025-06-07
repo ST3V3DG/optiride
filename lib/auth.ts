@@ -6,7 +6,7 @@ import { db } from "@/db/db";           // ← your Drizzle client instance
 import { schema } from "@/db/schema";   // ← { users, accounts, sessions, verifications, … }
 import { nextCookies } from "better-auth/next-js";
 import { sendEmail } from "@/server/email";
-import { openAPI, organization, admin } from "better-auth/plugins";
+import { organization, admin } from "better-auth/plugins";
 import { ac, allRoles } from "@/lib/permissions";
 
 export const auth = betterAuth({
@@ -168,7 +168,7 @@ export const auth = betterAuth({
   emailVerification: {
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
-    sendVerificationEmail: async ({ user, url, token }, request) => {
+    sendVerificationEmail: async ({ user, url }) => {
       await sendEmail({
         to: user.email,
         subject: "Verify your email address",

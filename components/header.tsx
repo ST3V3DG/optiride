@@ -90,7 +90,7 @@ export default function Header({
                 </Button>
                 <Button className='dark:text-white' asChild>
                   <Link href="/register">
-                    <span>S'inscrire</span>
+                    <span>S&apos;inscrire</span>
                   </Link>
                 </Button></> : <LogoutButton className='bg-secondary text-white cursor-pointer dark:text-secondary-foreground shadow-xs hover:bg-secondary/80' /> }
               </div>

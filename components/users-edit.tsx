@@ -2,11 +2,11 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import UsersForm from "./users-form";
 import { Separator } from "@/components/ui/separator";
 import DangerZone from "./danger-zone";
-import { UserSafe } from "@/lib/types";
+import { User } from "@/db/schema";
 import NoData from "./no-data";
 
 interface UserProfileProps {
-  user?: UserSafe;
+  user?: User;
 }
 
 export default function UserEdit({ user }: UserProfileProps) {

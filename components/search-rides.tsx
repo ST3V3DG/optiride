@@ -8,23 +8,8 @@ import { Search } from "lucide-react";
 import Loader from "@/components/loader";
 import { City, Ride, User } from "@/db/schema";
 import { RideWithNames, SearchParams } from "@/lib/types";
-import { getCitiesAction, getCityAction } from "@/server/cities";
+import { getCitiesAction } from "@/server/cities";
 import { getFilteredRides } from "@/server/rides";
-
-// API function to fetch a specific city
-async function fetchCity(id: number) {
-  try {
-    const response = await getCityAction(id.toString());
-    if (!response.success) {
-      console.error("Failed to search rides", response.error);
-      return null;
-    }
-    return response.data?.[0];
-  } catch (error) {
-    console.error("Error fetching city:", error);
-    return null;
-  }
-}
 
 // API function to search rides
 async function searchRides(params: SearchParams): Promise<RideWithNames[]> {
@@ -46,19 +31,13 @@ async function searchRides(params: SearchParams): Promise<RideWithNames[]> {
   }
 }
 
-interface SearchRidesProps {
+type SearchRidesProps = {
   onSearch: (rides: RideWithNames[]) => void;
 }
 
 export default function SearchRides({ onSearch }: SearchRidesProps) {
   const [departure_id, setDepartureId] = useState<number | null>(null);
   const [arrival_id, setArrivalId] = useState<number | null>(null);
-  const [departure_name, setDepartureName] = useState<
-    string | null | undefined
-  >(null);
-  const [arrival_name, setArrivalName] = useState<string | null | undefined>(
-    null
-  );
   const [date, setDate] = useState<string>("");
   const [seats, setSeats] = useState<number>(1);
   const [cities, setCities] =
@@ -88,16 +67,7 @@ export default function SearchRides({ onSearch }: SearchRidesProps) {
     });
     onSearch(results);
 
-    // Only fetch city names if IDs are valid
-    if (departure_id && !isNaN(departure_id)) {
-      const departure = await fetchCity(departure_id);
-      setDepartureName(departure?.name);
-    }
-
-    if (arrival_id && !isNaN(arrival_id)) {
-      const arrival = await fetchCity(arrival_id);
-      setArrivalName(arrival?.name);
-    }
+    // City names are not being used, so we don't need to fetch them
 
     setIsLoading(false);
   };

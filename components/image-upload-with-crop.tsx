@@ -16,6 +16,7 @@ import { RotateCcw, ImageUp, ZoomIn, ZoomOut } from "lucide-react";
 import { toast } from "sonner";
 
 import { FileUpload, FileUploadRef } from "@/components/ui/file-upload";
+import Image from "next/image";
 
 interface ImageUploadWithCropProps {
   onFileCropped: (file: File | null) => void;
@@ -48,12 +49,12 @@ export function ImageUploadWithCrop({
 
   const fileUploadComponentRef = useRef<FileUploadRef>(null);
 
-  const sourceMime =
-    originalFileFromSelection?.type ||
-    (initialImagePreviewUrl && initialImagePreviewUrl.startsWith("data:image/")
-      ? initialImagePreviewUrl.substring(5, initialImagePreviewUrl.indexOf(";"))
-      : null) ||
-    "image/png"; // A bit more robust mime detection
+  // const sourceMime =
+  //   originalFileFromSelection?.type ||
+  //   (initialImagePreviewUrl && initialImagePreviewUrl.startsWith("data:image/")
+  //     ? initialImagePreviewUrl.substring(5, initialImagePreviewUrl.indexOf(";"))
+  //     : null) ||
+  //   "image/png"; // A bit more robust mime detection
 
   const displayBlobUrlRef = useRef<string | null>(null);
 
@@ -329,7 +330,9 @@ export function ImageUploadWithCrop({
       {displayImagePreview ? (
         <div className="flex flex-col items-center space-y-3">
           {/* ADD key prop here */}
-          <img
+          <Image
+          width={500}
+          height={500}
             key={displayImagePreview} // Add key to force re-render on URL change
             src={displayImagePreview}
             alt="Prévisualisation"

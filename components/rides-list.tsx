@@ -20,8 +20,10 @@ export default function RidesList({ initialRides }: RidesListProps) {
 
   // Update rides when initialRides prop changes
   useEffect(() => {
+    setIsLoading(true);
     console.log("initialRides changed in RidesList:", initialRides);
     setRides(initialRides);
+    setIsLoading(false);
   }, [initialRides]);
 
   const handleTimeFilterChange = (timeRange: string) => {
@@ -126,7 +128,7 @@ export default function RidesList({ initialRides }: RidesListProps) {
                   htmlFor="hour_of_arrival"
                   className="flex justify-between items-center w-full"
                 >
-                  <span>Heure d'arrivée</span>
+                  <span>Heure d&apos;arrivée</span>
                   <Clock className="size-5" />
                 </Label>
               </div>

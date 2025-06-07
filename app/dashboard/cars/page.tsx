@@ -21,7 +21,7 @@ async function getCars(): Promise<CarWithDriverName[]> {
         year: cars.year,
         comfort: cars.comfort,
         registration: cars.registration,
-        number_of_seats: cars.number_of_seats,
+        available_seats: cars.available_seats,
         driverId: cars.driverId,
         createdAt: cars.createdAt,
         updatedAt: cars.updatedAt,

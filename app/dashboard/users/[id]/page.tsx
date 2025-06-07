@@ -12,14 +12,6 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NavUserProps } from "@/lib/types";
 
-export const dynamicParams = true;
-export async function generateStaticParams() {
-  const usersCollection: User[] = await db.select().from(users);
-  return usersCollection.map((user) => ({
-    id: String(user.id),
-  }));
-}
-
 async function getUser(id: string): Promise<User | null> {
   try {
     const user = await db

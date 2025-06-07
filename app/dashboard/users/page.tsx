@@ -14,6 +14,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { NavUserProps } from "@/lib/types";
+import Link from "next/link";
 
 // Helper function to fetch users - this runs on the server
 async function getUsers(): Promise<User[]> {
@@ -60,7 +61,7 @@ export default async function Page() {
     <div className="flex items-center gap-2">
       {canCreateUsers?.success && (
         <Button asChild>
-          <a href="/dashboard/users/create">Create User</a>
+          <Link href="/dashboard/users/create">Create User</Link>
         </Button>
       )}
       <ThemeToggle />

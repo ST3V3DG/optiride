@@ -1,4 +1,4 @@
-import { Car } from "@/lib/types";
+import { Car } from "@/db/schema";
 
 export default function CarList({
   cars,

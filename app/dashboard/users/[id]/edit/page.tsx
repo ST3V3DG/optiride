@@ -36,8 +36,13 @@ async function getUser(id: string): Promise<User | undefined> {
   }
 }
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const user = await getUser(params.id);
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const user = await getUser(id);
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -67,7 +72,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           breadcrumbs={[
             { label: "Dashboard", href: "/dashboard" },
             { label: "Users", href: "/dashboard/users" },
-            { label: "Edit User", href: `/dashboard/users/${params.id}/edit` },
+            { label: "Edit User", href: `/dashboard/users/${id}/edit` },
           ]}
           actions={<ThemeToggle />}
         />

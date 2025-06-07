@@ -22,12 +22,9 @@ import { useState, useEffect } from "react";
 import { uploadProfilePicture } from "@/server/users"; // Votre server action
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
+import Image from "next/image";
 
 export default function ProfileCard({ user }: { user: User }) {
-  if (!user) {
-    return <NoData />;
-  }
-
   const [croppedFileToUpload, setCroppedFileToUpload] = useState<File | null>(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [avatarImageUrl, setAvatarImageUrl] = useState<string | null>(user?.image ?? null);
@@ -35,6 +32,10 @@ export default function ProfileCard({ user }: { user: User }) {
   useEffect(() => {
     setAvatarImageUrl(user?.image ?? null);
   }, [user?.image]);
+
+  if (!user) {
+    return <NoData />;
+  }
 
   const handleFileReadyForUpload = (file: File | null) => {
     setCroppedFileToUpload(file);
@@ -126,7 +127,7 @@ export default function ProfileCard({ user }: { user: User }) {
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-lg">
                     <DialogHeader>
-                      <DialogTitle>Mettre à jour l'image de profil</DialogTitle>
+                      <DialogTitle>Mettre à jour l&apos;image de profil</DialogTitle>
                       <DialogDescription>
                         Sélectionnez, rognez, puis sauvegardez votre nouvelle image.
                       </DialogDescription>
@@ -165,7 +166,7 @@ export default function ProfileCard({ user }: { user: User }) {
                 </li>
                 {/* ... autres champs ... */}
                 <li>
-                  <span className="mr-2 font-medium">Date d'inscription :</span>
+                  <span className="mr-2 font-medium">Date d&apos;inscription :</span>
                   <span className="capitalize">{user.createdAt ? new Date(user.createdAt).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric'}) : "N/A"}</span>
                 </li>
                  <li className="pt-2">
@@ -183,22 +184,19 @@ export default function ProfileCard({ user }: { user: User }) {
         </Card>
          <Card className="col-span-1">
           <CardHeader>
-            <CardTitle>Photos d'identité</CardTitle>
+            <CardTitle>Photos d&apos;identité</CardTitle>
           </CardHeader>
           <Separator />
           <CardContent className="flex flex-col gap-4 p-4">
-            {/* @ts-ignore */}
             <div className="border rounded-lg border-accent-foreground/50 aspect-video bg-muted flex items-center justify-center text-sm text-muted-foreground">
-              {user.nic_passport_picture_1 ? <img src={user.nic_passport_picture_1 as string} alt="ID Recto" className="object-contain w-full h-full"/> : "Recto ID (non fourni)"}
+              {user.nic_passport_picture_1 ? <Image src={user.nic_passport_picture_1 as string} alt="ID Recto" className="object-contain w-full h-full"/> : "Recto ID (non fourni)"}
             </div>
-            {/* @ts-ignore */}
             <div className="border rounded-lg border-accent-foreground/50 aspect-video bg-muted flex items-center justify-center text-sm text-muted-foreground">
-            {user.nic_passport_picture_2 ? <img src={user.nic_passport_picture_2 as string} alt="ID Verso" className="object-contain w-full h-full"/> : "Verso ID (non fourni)"}
+            {user.nic_passport_picture_2 ? <Image src={user.nic_passport_picture_2 as string} alt="ID Verso" className="object-contain w-full h-full"/> : "Verso ID (non fourni)"}
             </div>
           </CardContent>
         </Card>
       </div>
-      {/* @ts-ignore */}
       <DangerZone id={Number(user.id)} collectionName="users" />
     </div>
   );

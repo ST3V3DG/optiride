@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-interface LoaderProps {
+type LoaderProps = {
   size?: "sm" | "md" | "lg" | "xl";
   variant?: "light" | "dark";
   className?: string;
@@ -15,7 +15,7 @@ const sizeMap = {
 
 export default function Loader({
   size = "lg",
-  variant = "light",
+  // variant = "light",
   className,
 }: LoaderProps) {
   return (

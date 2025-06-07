@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { Eye, EyeOff, Link } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 // import {
 //   Select,
 //   SelectContent,
@@ -28,7 +28,6 @@ import { toast } from "sonner";
 // import { Checkbox } from "./ui/checkbox";
 import { createUser, updateUser } from "@/server/users";
 import Loader from "./loader";
-import { User } from "@/db/schema"
 import { UserFormProps } from "@/lib/types";
 
 // Base schema for common fields
@@ -42,7 +41,7 @@ const baseFormSchema = z.object({
   // phone: z.string().min(9, {
   //   message: "Phone must be at least 9 characters.",
   // }),
-  email: z.email(),
+  email: z.string().email(),
   // role: z.enum(["user", "driver", "admin"], {
   //   message: "Type must be one of: user, driver, admin.",
   // }),
@@ -76,7 +75,7 @@ export default function UsersForm({ data, operation }: UserFormProps) {
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema as any),
+    resolver: zodResolver(formSchema),
     defaultValues: {
       // nic_passport_number: data?.nic_passport_number ?? "",
       name: data?.name ?? "",
@@ -144,7 +143,7 @@ export default function UsersForm({ data, operation }: UserFormProps) {
           }
         }
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error(
         `Error ${operation === "create" ? "creating" : "updating"} user:`,
         error

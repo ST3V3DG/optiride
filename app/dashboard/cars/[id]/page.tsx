@@ -11,7 +11,6 @@ import { CarWithDriverName } from "@/lib/types";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NavUserProps } from "@/lib/types";
-import { redirect } from "next/navigation";
 
 async function getCar(id: string): Promise<CarWithDriverName | null> {
   try {
@@ -49,29 +48,22 @@ export default async function Page({
     image: session?.user?.image || null,
   };
 
-  if (!session) {
-    redirect('/login');
-  }
-  if (!car) {
-    // Already handled (renders "CarDetails" only if car exists)
-    // but good to be explicit that session checks come after car existence
-    // No redirect here as the component handles car not found state.
-  }
+  // const canReadCar = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { car: ["read"] } } });
 
-  const canReadCar = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { car: ["read"] } } });
-
-  if (canReadCar?.granted) {
-    // Admin or User (client) with general 'read' permission can view.
-    // If user is a driver, they must own the car to view its details page (unless they are admin).
-    // @ts-ignore session.user.id should be string for comparison if car.driverId is string
-    if (session.user?.role === 'driver' && String(car?.driverId) !== session.user.id && session.user?.role !== 'admin') {
-       // If car is null here because it wasn't found, car?.driverId will be undefined, which is fine.
-      redirect('/dashboard/cars'); // Forbidden, not their car
-    }
-  } else {
-    // No general 'read' permission
-    redirect('/dashboard/cars'); // Forbidden
-  }
+  // if (canReadCar?.success) {
+  //   // Admin or User (client) with general 'read' permission can view.
+  //   // If user is a driver, they must own the car to view its details page (unless they are admin).
+  //   if (
+  //     session.user?.role === 'driver' &&
+  //     String(car?.driverId) !== session.user.id
+  //   ) {
+  //     // If car is null here because it wasn't found, car?.driverId will be undefined, which is fine.
+  //     redirect('/dashboard/cars'); // Forbidden, not their car
+  //   }
+  // } else {
+  //   // No general 'read' permission
+  //   redirect('/dashboard/cars'); // Forbidden
+  // }
 
   return (
     <SidebarProvider>

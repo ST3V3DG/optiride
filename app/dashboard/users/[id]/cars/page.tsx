@@ -1,54 +1,18 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
-  BreadcrumbPage,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import {
   SidebarProvider,
   SidebarInset,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { getColumns } from "@/app/dashboard/cars/columns";
-// import { TriangleAlert } from "lucide-react";
-// import { DataTable } from "@/app/dashboard/cars/user-table";
-import Loader from "@/components/loader";
-import { Car, User, cars, users } from "@/db/schema";
+import { cars, users } from "@/db/schema";
 import { db } from "@/db/db";
-import { eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { CarWithDriverName } from "@/lib/types";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NavUserProps } from "@/lib/types";
-import NoData from "@/components/no-data";
 import CarsTable from "@/components/cars-table";
 import { PageHeader } from "@/components/page-header";
-
-export const dynamicParams = true;
-export async function generateStaticParams() {
-  const usersCollection: User[] = await db.select().from(users);
-  return usersCollection.map((user) => ({
-    id: String(user.id),
-  }));
-}
-
-async function getUser(id: string): Promise<User | null> {
-  try {
-    const user = await db
-      .select()
-      .from(users)
-      .where(eq(users.id, Number(id)));
-    return user[0] as User;
-  } catch (error) {
-    console.error("Error fetching user:", error);
-    return null;
-  }
-}
 
 async function getCars(id: string): Promise<CarWithDriverName[]> {
   try {
@@ -60,7 +24,7 @@ async function getCars(id: string): Promise<CarWithDriverName[]> {
         year: cars.year,
         comfort: cars.comfort,
         registration: cars.registration,
-        number_of_seats: cars.number_of_seats,
+        available_seats: cars.available_seats,
         driverId: cars.driverId,
         createdAt: cars.createdAt,
         updatedAt: cars.updatedAt,
@@ -84,7 +48,6 @@ export default async function Page({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const user = await getUser(id);
   const session = await auth.api.getSession({
     headers: await headers(),
   });

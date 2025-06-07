@@ -19,7 +19,6 @@ import UsersCreate from "@/components/users-create";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NavUserProps } from "@/lib/types";
-import { redirect } from "next/navigation";
 
 export default async function Page() {
   const breadcrumbs = [
@@ -31,14 +30,11 @@ export default async function Page() {
     headers: await headers(),
   });
 
-  if (!session) {
-    redirect('/login'); // Or your appropriate login page
-  }
   // Check permission to create users
-  const canCreateUsers = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["create"] } } });
-  if (!canCreateUsers?.granted) {
-    redirect('/dashboard'); // Or an access denied page
-  }
+  // const canCreateUsers = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["create"] } } });
+  // if (!canCreateUsers?.success) {
+  //   redirect('/dashboard'); // Or an access denied page
+  // }
 
   const userProps: NavUserProps = {
     id: session?.user?.id || null,

@@ -44,7 +44,7 @@ export default function CarDetails({ car }: { car: CarWithDriverName }) {
             </li>
             <li>
               <span className="font-medium mr-2">Number of seats:</span>
-              <span className="capitalize">{car.number_of_seats || "N/A"}</span>
+              <span className="capitalize">{car.available_seats || "N/A"}</span>
             </li>
           </ul>
         </CardContent>

@@ -18,7 +18,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { City, Ride, User } from "@/lib/types";
+import { City, Ride, User } from "@/db/schema";
 
 export function Combobox({
   collection,

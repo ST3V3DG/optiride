@@ -27,7 +27,7 @@ import LogoutButton from "./logout-button";
 import { NavUserProps } from "@/lib/types";
 import Link from "next/link";
 
-interface NavUserClientProps {
+type NavUserClientProps = {
   user: NavUserProps | null;
   isMobile: boolean;
 }
