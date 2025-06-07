@@ -359,11 +359,19 @@ export const getColumns = (
             <DropdownMenuItem asChild>
               <Link className="w-full" href={`/dashboard/rides/${row.original.id}`}>Details</Link>
             </DropdownMenuItem>
+<<<<<<< HEAD
             {/* {showEditButton && ( */}
               <DropdownMenuItem asChild>
                 <Link className="w-full" href={`/dashboard/rides/${row.original.id}/edit`}>Edit</Link>
               </DropdownMenuItem>
             {/* )} */}
+=======
+            {/* {showEditButton && (
+              <DropdownMenuItem asChild>
+                <Link className="w-full" href={`/dashboard/rides/${row.original.id}/edit`}>Edit</Link>
+              </DropdownMenuItem>
+            )} */}
+>>>>>>> fix-build-errors
             {/* {showDeleteButton && ( */}
               <DropdownMenuItem onSelect={() => false} className="p-0 focus:bg-transparent">
                 <DeleteButton

@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-interface LoaderProps {
+type LoaderProps = {
   size?: "sm" | "md" | "lg" | "xl";
   variant?: "light" | "dark";
   className?: string;

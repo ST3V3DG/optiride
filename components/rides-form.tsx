@@ -27,11 +27,7 @@ import {
 } from "@/server/rides";
 import { getCarsAction } from "@/server/cars";
 import { Ride } from "@/db/schema";
-
-interface Option {
-  id: number;
-  label: string;
-}
+import { Option } from "@/lib/types";
 
 const formSchema = z.object({
   driver: z.number().min(1, "Driver is required."),

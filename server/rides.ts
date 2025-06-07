@@ -5,7 +5,7 @@ import { db } from "@/db/db";
 import { rides, users, cities, cars } from "@/db/schema";
 import { and, eq, getTableColumns, gte, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { RideWithNames } from "../lib/types";
+import { RideWithNames } from "@/lib/types";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
@@ -84,7 +84,7 @@ export async function createRide(formData: z.infer<typeof rideActionSchema>) {
       date: validatedFields.data.date
     };
 
-    const result = await db.insert(rides).values(rideData).execute();
+    // const result = await db.insert(rides).values(rideData).execute();
 
     revalidatePath("/dashboard/rides");
     return { success: "Ride created successfully." };

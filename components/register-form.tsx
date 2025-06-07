@@ -74,11 +74,18 @@ export function SignUpForm({
             "User registration failed. " + String(response.error).slice(10) + ".",
         });
         console.log(response.error);
+        form.reset({name, email});
       }
     } catch (error) {
+<<<<<<< HEAD
       console.log("Erreur d'inscription: ", error);
       toast.error("Error !", {
         description: "Oops ! Something went wrong.",
+=======
+      console.error("Erreur d'inscription: ", error);
+      toast.error("Error !", {
+        description: error instanceof Error ? error.message : 'An unknown error occurred',
+>>>>>>> fix-build-errors
       });
     } finally {
       setIsLoading(false);

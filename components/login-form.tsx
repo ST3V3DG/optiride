@@ -60,12 +60,15 @@ export function LoginForm({
           description: "User authentication failed. " + String(response.error).slice(10) + ".",
         });
         console.log(response);
-        form.reset({email});
       }
     } catch (error) {
       console.log("Erreur d'inscription: ", error);
       toast.error("Error !", {
+<<<<<<< HEAD
         description: "Oops ! Something went wrong.",
+=======
+        description: error as string,
+>>>>>>> fix-build-errors
       });
     }
     setIsLoading(false);

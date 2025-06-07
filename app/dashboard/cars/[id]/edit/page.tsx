@@ -10,7 +10,10 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NavUserProps } from "@/lib/types";
 import { ThemeToggle } from "@/components/theme-toggle";
+<<<<<<< HEAD
 import NoData from "@/components/no-data";
+=======
+>>>>>>> fix-build-errors
 
 async function getCar(id: string): Promise<CarWithDriverName | null> {
   try {
@@ -51,6 +54,7 @@ export default async function Page({
     image: session?.user?.image || null,
   };
 
+<<<<<<< HEAD
   // const canUpdateCar = await auth.api.hasPermission({
   //   headers: await headers(),
   //   body: { permissions: { car: ["update"] } },
@@ -64,6 +68,49 @@ export default async function Page({
   //   }
   // } else {
   //   redirect('/dashboard/cars');
+=======
+  // It's important to check if car exists before trying to access its properties for auth checks
+  if (!car) {
+    // Render the existing not found UI; no redirect needed here as session is valid
+    // but the specific resource is not found.
+    return (
+      // Copied from existing !car block below, but ensuring session data is passed to sidebar
+      <SidebarProvider>
+        <AppSidebar user={userProps} />
+        <SidebarInset>
+          <PageHeader
+            title="Car Not Found"
+            breadcrumbs={[
+              { label: "Dashboard", href: "/dashboard" },
+              { label: "Cars", href: "/dashboard/cars" },
+              { label: "Error", href: `/dashboard/cars/${id}/edit` },
+            ]}
+            actions={<ThemeToggle />}
+          />
+          <div className="flex flex-1 flex-col gap-4 p-4 pt-0 items-center justify-center">
+            <p>The car with ID {id} could not be found.</p>
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
+    );
+  }
+
+  // const canUpdateCar = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { car: ["update"] } } });
+
+  // if (canUpdateCar?.success) {
+  //   // Admin with permission can edit any car.
+  //   // If user is a driver, they must own the car.
+  //   if (session.user?.role === 'driver' && String(car.driverId) !== session.user.id) {
+  //     redirect('/dashboard/cars'); // Forbidden, not their car
+  //   }
+  //   // If user is 'user' (client), they cannot edit cars based on current permissions.
+  //   else if (session.user?.role === 'user') {
+  //      redirect('/dashboard/cars'); // Forbidden
+  //   }
+  // } else {
+  //   // No general 'update' permission
+  //   redirect('/dashboard/cars'); // Forbidden
+>>>>>>> fix-build-errors
   // }
 
   return (

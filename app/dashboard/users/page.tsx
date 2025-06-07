@@ -61,7 +61,11 @@ export default async function Page() {
     <div className="flex items-center gap-2">
       {/* {canCreateUsers?.success && ( */}
         <Button asChild>
+<<<<<<< HEAD
           <Link className="text-white" href="/dashboard/users/create">Create User</Link>
+=======
+          <Link href="/dashboard/users/create">Create User</Link>
+>>>>>>> fix-build-errors
         </Button>
       {/* )} */}
       <ThemeToggle />

@@ -26,9 +26,13 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+<<<<<<< HEAD
 import { Option } from "@/lib/types"
 
 
+=======
+import { Option } from "@/lib/types";
+>>>>>>> fix-build-errors
 
 const formSchema = z.object({
   driverId: z.number().min(1, "Driver is required."),

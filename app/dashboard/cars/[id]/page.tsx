@@ -11,7 +11,10 @@ import { CarWithDriverName } from "@/lib/types";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NavUserProps } from "@/lib/types";
+<<<<<<< HEAD
 import { toast } from "sonner";
+=======
+>>>>>>> fix-build-errors
 
 async function getCar(id: string): Promise<CarWithDriverName | null> {
   try {
@@ -52,6 +55,7 @@ export default async function Page({
     image: session?.user?.image || null,
   };
 
+<<<<<<< HEAD
   // const canReadCar = await auth.api.hasPermission({
   //   headers: await headers(),
   //   body: { permissions: { car: ["read"] } },
@@ -70,6 +74,23 @@ export default async function Page({
   // } else {
   //   // No general 'read' permission
   //   redirect("/dashboard/cars"); // Forbidden
+=======
+  // const canReadCar = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { car: ["read"] } } });
+
+  // if (canReadCar?.success) {
+  //   // Admin or User (client) with general 'read' permission can view.
+  //   // If user is a driver, they must own the car to view its details page (unless they are admin).
+  //   if (
+  //     session.user?.role === 'driver' &&
+  //     String(car?.driverId) !== session.user.id
+  //   ) {
+  //     // If car is null here because it wasn't found, car?.driverId will be undefined, which is fine.
+  //     redirect('/dashboard/cars'); // Forbidden, not their car
+  //   }
+  // } else {
+  //   // No general 'read' permission
+  //   redirect('/dashboard/cars'); // Forbidden
+>>>>>>> fix-build-errors
   // }
 
   return (

@@ -34,7 +34,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
 
   const navMainItems = [
     // Users item - conditional
-    ...(true ? [{
+    {
       title: "Users",
       url: "/dashboard/users",
       icon: Users,
@@ -49,7 +49,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
           url: "/dashboard/users/create",
         },
       ],
-    }] : []),
+    },
     // Rides item - always visible for now
     {
       title: "Rides",

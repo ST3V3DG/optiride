@@ -6,7 +6,6 @@ import CarsCreate from "@/components/cars-create";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NavUserProps } from "@/lib/types";
-import { redirect } from "next/navigation";
 
 export default async function Page() {
   const session = await auth.api.getSession({
@@ -19,6 +18,10 @@ export default async function Page() {
     email: session?.user?.email || null,
     image: session?.user?.image || null,
   };
+<<<<<<< HEAD
+=======
+
+>>>>>>> fix-build-errors
   // const canCreateCar = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { car: ["create"] } } });
   // if (!canCreateCar?.success) {
   //   redirect('/dashboard/cars'); // Or to a more general access-denied page

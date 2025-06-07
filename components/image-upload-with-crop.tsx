@@ -331,8 +331,13 @@ export function ImageUploadWithCrop({
         <div className="flex flex-col items-center space-y-3">
           {/* ADD key prop here */}
           <Image
+<<<<<<< HEAD
             width={500}
             height={500}
+=======
+          width={500}
+          height={500}
+>>>>>>> fix-build-errors
             key={displayImagePreview} // Add key to force re-render on URL change
             src={displayImagePreview}
             alt="Prévisualisation"
