@@ -19,14 +19,10 @@ export default async function Page() {
     email: session?.user?.email || null,
     image: session?.user?.image || null,
   };
-
-  if (!session) {
-    redirect('/login');
-  }
-  const canCreateCar = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { car: ["create"] } } });
-  if (!canCreateCar?.granted) {
-    redirect('/dashboard/cars'); // Or to a more general access-denied page
-  }
+  // const canCreateCar = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { car: ["create"] } } });
+  // if (!canCreateCar?.success) {
+  //   redirect('/dashboard/cars'); // Or to a more general access-denied page
+  // }
 
   return (
     <SidebarProvider>
