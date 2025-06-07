@@ -10,6 +10,8 @@ import CarsTable from "@/components/cars-table";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NavUserProps } from "@/lib/types";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 async function getCars(): Promise<CarWithDriverName[]> {
   try {
@@ -21,7 +23,7 @@ async function getCars(): Promise<CarWithDriverName[]> {
         year: cars.year,
         comfort: cars.comfort,
         registration: cars.registration,
-        number_of_seats: cars.number_of_seats,
+        available_seats: cars.available_seats,
         driverId: cars.driverId,
         createdAt: cars.createdAt,
         updatedAt: cars.updatedAt,
@@ -44,6 +46,17 @@ export default async function Page() {
     headers: await headers(),
   });
 
+  const pageHeaderActions = (
+      <div className="flex items-center gap-2">
+        {/* {canCreateCars?.success && ( */}
+          <Button asChild>
+            <Link className="text-white" href="/dashboard/cars/create">Create Car</Link>
+          </Button>
+        {/* )} */}
+        <ThemeToggle />
+      </div>
+    );
+
   const userProps: NavUserProps = {
     id: session?.user?.id || null,
     name: session?.user?.name || null,
@@ -61,7 +74,7 @@ export default async function Page() {
             { label: "Dashboard", href: "/dashboard" },
             { label: "Cars", href: "/dashboard/cars" },
           ]}
-          actions={<ThemeToggle />}
+          actions={pageHeaderActions}
         />
         <div className="flex-1 space-y-4 p-4 pt-0">
           <CarsTable initialCars={initialCars} />

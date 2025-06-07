@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,7 +47,7 @@ const formSchema = z.object({
     .string()
     .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid arrival time."),
   price: z.number().positive("Price must be a positive number."),
-  number_of_seats: z
+  available_seats: z
     .number()
     .int()
     .min(1, "Number of seats must be at least 1."),
@@ -137,7 +137,7 @@ export default function RidesForm({
   }, [data]);
 
   const form = useForm<FormData>({
-    resolver: zodResolver(formSchema as any),
+    resolver: zodResolver(formSchema),
     defaultValues: {
       driver: data?.driverId ?? undefined,
       car: data?.carId ?? undefined,
@@ -148,7 +148,7 @@ export default function RidesForm({
       collection_point: data?.collection_point ?? "",
       drop_off_point: data?.drop_off_point ?? "",
       price: data?.price ? Number(data.price) : 0,
-      number_of_seats: data?.number_of_seats ?? 1,
+      available_seats: data?.available_seats ?? 1,
       date: date,
       description: data?.description ?? "",
     },
@@ -186,8 +186,8 @@ export default function RidesForm({
         .split(":")
         .map(Number);
 
-      let departureTimeInMinutes = departureHours * 60 + departureMinutes;
-      let arrivalTimeInMinutes = arrivalHours * 60 + arrivalMinutes;
+      const departureTimeInMinutes = departureHours * 60 + departureMinutes;
+      const arrivalTimeInMinutes = arrivalHours * 60 + arrivalMinutes;
 
       let durationInMinutes = arrivalTimeInMinutes - departureTimeInMinutes;
       if (durationInMinutes < 0) {
@@ -229,9 +229,9 @@ export default function RidesForm({
       }
     } catch (error) {
       console.error("Error during form submission:", error);
-      toast.error("Error!", {
-        description: "An unexpected error occurred. Please try again.",
-      });
+        toast.error("Error !", {
+            description: "Oops ! Something went wrong.",
+        });
     } finally {
       setIsSubmitting(false);
     }
@@ -406,7 +406,7 @@ export default function RidesForm({
 
           <FormField
             control={form.control}
-            name="number_of_seats"
+            name="available_seats"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Number of seats</FormLabel>

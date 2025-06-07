@@ -95,7 +95,7 @@ export default function RideDetails( { ride }: { ride: RideWithNames } ) {
             <li>
               <span className="font-medium mr-2">Available seats:</span>
               <span className="capitalize">
-                {ride.number_of_seats || "N/A"}
+                {ride.available_seats || "N/A"}
               </span>
             </li>
           </ul>

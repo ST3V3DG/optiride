@@ -102,7 +102,7 @@ export default async function Page({
                 </div>
                 <div className="flex items-center">
                   <span className="text-xl mr-3">🐾</span>
-                  Je préfère ne pas voyager en compagnie d'animaux
+                  Je préfère ne pas voyager en compagnie d`&apos;animaux
                 </div>
                 <hr className="my-4" />
                 <div className="flex items-center">
@@ -193,8 +193,8 @@ export default async function Page({
 
               <div className="flex justify-between items-center my-4">
                 <span className="text-foreground/80">
-                  {rideDetails?.number_of_seats
-                    ? String(rideDetails?.number_of_seats).padStart(2, "0")
+                  {rideDetails?.available_seats
+                    ? String(rideDetails?.available_seats).padStart(2, "0")
                     : 0}{" "}
                   passager(s)
                 </span>
