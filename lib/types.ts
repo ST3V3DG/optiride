@@ -34,3 +34,23 @@ export type UserFormProps = {
   data?: User;
   operation: "create" | "update";
 }
+
+export type SearchRidesProps = {
+  onSearch: (rides: RideWithNames[]) => void;
+}
+
+export type BreadcrumbType = {
+  label: string;
+  href: string;
+}
+
+export type Option = {
+  id: number;
+  label: string;
+}
+
+export type CarsTableProps = {
+  initialCars: CarWithDriverName[];
+}
+
+export type CarComfort = "standard" | "premium" | "luxury";
