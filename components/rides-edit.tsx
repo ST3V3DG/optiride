@@ -6,8 +6,8 @@ import { Ride } from "@/db/schema";
 
 export default function RidesEdit({ ride }: { ride: Ride }) {
   return (
-    <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-md md:min-h-min p-2 flex flex-col gap-4 place-content-center items-center">
-      <Card className="max-w-[500px] w-full">
+    <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-md md:min-h-min p-2 flex flex-col gap-4 place-content-center items-stretch">
+      <Card className="max-w-[500px] w-full self-center">
         <CardHeader>
           <CardTitle>Edit a ride</CardTitle>
         </CardHeader>
