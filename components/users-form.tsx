@@ -169,7 +169,7 @@ export default function UsersForm({ data, operation }: UserFormProps) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-8 grid grid-cols-1 md:grid-cols-2 gap-4"
+        className="space-y-8 grid grid-cols-1 gap-4"
       >
 
         <FormField
@@ -208,9 +208,9 @@ export default function UsersForm({ data, operation }: UserFormProps) {
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
+                      <EyeOff className="size-4" />
                     ) : (
-                      <Eye className="h-4 w-4" />
+                      <Eye className="size-4" />
                     )}
                   </button>
                 </div>
@@ -239,7 +239,7 @@ export default function UsersForm({ data, operation }: UserFormProps) {
         />
 
         <Button
-          className="float-right hover:cursor-pointer text-white md:col-span-2"
+          className="float-right hover:cursor-pointer text-white"
           type="submit"
           disabled={isSubmitting || !form.formState.isValid}
         >
