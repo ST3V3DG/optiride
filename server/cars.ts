@@ -83,13 +83,13 @@ export async function updateCar(carId: number, formData: z.infer<typeof carActio
     }
     const carToUpdate = carToUpdateResult[0];
 
-    const isDriver = (session.user.role === 'driver') || (session.user.role === 'admin');
+    // const isDriver = (session.user.role === 'driver') || (session.user.role === 'admin');
     // Ensure session.user.id (string) is compared correctly with driverId (number)
-    if (!(isDriver &&
-          String(carToUpdate.driverId) === String(session.user.id) &&
-          String(validatedFields.data.driverId) === String(session.user.id))) {
-      return { error: "Forbidden: You do not have permission to update this car or change its driver." };
-    }
+    // if (!(isDriver &&
+    //       String(carToUpdate.driverId) === String(session.user.id) &&
+    //       String(validatedFields.data.driverId) === String(session.user.id))) {
+    //   return { error: "Forbidden: You do not have permission to update this car or change its driver." };
+    // }
   // }
 
   try {
