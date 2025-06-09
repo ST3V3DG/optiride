@@ -55,7 +55,7 @@ export function Combobox({
         >
           {/* Ensure label is displayed, handle potential null/undefined */}
           <span className="truncate">{selectedLabel}</span>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       {/* Make PopoverContent width match the trigger */}
@@ -91,7 +91,7 @@ export function Combobox({
                     >
                       <Check
                         className={cn(
-                          "mr-2 h-4 w-4",
+                          "mr-2 size-4",
                           // Compare selected value (ID) with item's ID
                           value === item.id ? "opacity-100" : "opacity-0"
                         )}

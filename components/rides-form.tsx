@@ -245,6 +245,7 @@ export default function RidesForm({
                 <FormLabel>Driver</FormLabel>
                 <Combobox
                   collection={drivers}
+                  className="dark:bg-input/30"
                   value={selectedDriver}
                   setValue={(value) => {
                     setSelectedDriver(value as number);
@@ -265,6 +266,7 @@ export default function RidesForm({
                 <FormLabel>Car</FormLabel>
                 <Combobox
                   collection={carsOptions}
+                  className="dark:bg-input/30"
                   value={selectedCar}
                   setValue={(value) => {
                     setSelectedCar(value as number);
@@ -285,6 +287,7 @@ export default function RidesForm({
                 <FormLabel>Place of departure</FormLabel>
                 <Combobox
                   collection={cities}
+                  className="dark:bg-input/30"
                   value={selectedDeparture}
                   setValue={(value) => {
                     setSelectedDeparture(value as number);
@@ -305,6 +308,7 @@ export default function RidesForm({
                 <FormLabel>Place of arrival</FormLabel>
                 <Combobox
                   collection={cities}
+                  className="dark:bg-input/30"
                   value={selectedArrival}
                   setValue={(value) => {
                     setSelectedArrival(value as number);
@@ -347,7 +351,7 @@ export default function RidesForm({
 
           <FormItem className="flex flex-col md:col-span-2">
             <FormLabel>Date</FormLabel>
-            <DatePicker className="w-full" date={date} setDate={setDate} />
+            <DatePicker className="w-full dark:bg-input/30" date={date} setDate={setDate} />
             <FormMessage />
           </FormItem>
 

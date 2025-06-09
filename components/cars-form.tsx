@@ -163,6 +163,7 @@ export default function CarsForm({
                 <FormLabel>Driver</FormLabel>
                 <Combobox
                   collection={drivers}
+                  className="dark:bg-input/30"
                   value={selectedDriver}
                   setValue={(value) => {
                     setSelectedDriver(value as number);

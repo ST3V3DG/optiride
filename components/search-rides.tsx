@@ -10,6 +10,7 @@ import { City, Ride, User } from "@/db/schema";
 import {RideWithNames, SearchParams, SearchRidesProps} from "@/lib/types";
 import { getCitiesAction } from "@/server/cities";
 import { getFilteredRides } from "@/server/rides";
+import { DatePicker } from "./date-picker";
 
 
 async function searchRides(params: SearchParams): Promise<RideWithNames[]> {
@@ -34,7 +35,7 @@ async function searchRides(params: SearchParams): Promise<RideWithNames[]> {
 export default function SearchRides({ onSearch }: SearchRidesProps) {
   const [departure_id, setDepartureId] = useState<number | null>(null);
   const [arrival_id, setArrivalId] = useState<number | null>(null);
-  const [date, setDate] = useState<string>("");
+  const [date, setDate] = useState<Date>(new Date());
   const [seats, setSeats] = useState<number>(1);
   const [cities, setCities] =
       useState<{ id: number | null; label: string | null }[]>();
@@ -58,7 +59,7 @@ export default function SearchRides({ onSearch }: SearchRidesProps) {
     const results = await searchRides({
       departure_id,
       arrival_id,
-      date,
+      date: String(date),
       seats,
     });
     onSearch(results);
@@ -77,7 +78,7 @@ export default function SearchRides({ onSearch }: SearchRidesProps) {
                     React.SetStateAction<number | City | User | Ride | null>
                 >
               }
-              className="lg:col-span-2"
+              className="lg:col-span-2 dark:bg-input/30"
               placeholder="Ville de départ"
           />
           <Combobox
@@ -88,15 +89,16 @@ export default function SearchRides({ onSearch }: SearchRidesProps) {
                     React.SetStateAction<number | City | User | Ride | null>
                 >
               }
-              className="lg:col-span-2"
+              className="lg:col-span-2 dark:bg-input/30"
               placeholder="Ville de d'arrivée"
           />
-          <Input
+          {/* <Input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
               className="lg:col-span-2"
-          />
+          /> */}
+          <DatePicker date={date} setDate={setDate} className="lg:col-span-2 dark:bg-input/30" />
           <Input
               type="number"
               value={seats}
