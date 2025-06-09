@@ -6,19 +6,19 @@ import {
 } from "@/components/ui/sidebar";
 import { PageHeader } from "@/components/page-header";
 import CarsTable from "@/components/cars-table";
-import { cars, User, users } from "@/db/schema";
+import { cars, users } from "@/db/schema";
 import { CarWithDriverName, NavUserProps } from "@/lib/types";
 import { db } from "@/db/db";
 import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
-export const dynamicParams = true;
+export const dynamicParams = false;
 
 export async function generateStaticParams() {
-  const usersCollection: User[] = await db.select().from(users);
-  return usersCollection.map((user) => ({
-    id: String(user.id),
+  const rows = await db.select({ id: users.id }).from(users);
+  return rows.map((row) => ({
+    id: String(row.id),
   }));
 }
 

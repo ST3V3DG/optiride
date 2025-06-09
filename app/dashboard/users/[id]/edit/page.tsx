@@ -12,6 +12,15 @@ import { headers } from "next/headers";
 import { NavUserProps } from "@/lib/types";
 import { redirect } from "next/navigation";
 
+export const dynamicParams = false;
+
+export async function generateStaticParams() {
+  const rows = await db.select({ id: users.id }).from(users);
+  return rows.map((row) => ({
+    id: String(row.id),
+  }));
+}
+
 async function getUser(id: string): Promise<User | undefined> {
   try {
     // Destructure to get all columns from 'users' table schema

@@ -12,6 +12,15 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NavUserProps } from "@/lib/types";
 
+export const dynamicParams = false;
+
+export async function generateStaticParams() {
+  const rows = await db.select({ id: users.id }).from(users);
+  return rows.map((row) => ({
+    id: String(row.id),
+  }));
+}
+
 async function getUser(id: string): Promise<User | null> {
   try {
     const user = await db

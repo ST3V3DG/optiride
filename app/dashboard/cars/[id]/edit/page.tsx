@@ -12,6 +12,15 @@ import { NavUserProps } from "@/lib/types";
 import { ThemeToggle } from "@/components/theme-toggle";
 import NoData from "@/components/no-data";
 
+export const dynamicParams = false;
+
+export async function generateStaticParams() {
+  const rows = await db.select({ id: cars.id }).from(cars);
+  return rows.map((row) => ({
+    id: String(row.id),
+  }));
+}
+
 async function getCar(id: string): Promise<CarWithDriverName | null> {
   try {
     const results = await db
