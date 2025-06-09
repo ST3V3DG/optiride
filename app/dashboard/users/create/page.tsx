@@ -34,11 +34,11 @@ export default async function Page() {
         <AppSidebar user={userProps} />
         <SidebarInset>
          <PageHeader
-           title={`Edit user`}
+           title={`Create user`}
            breadcrumbs={[
              { label: "Dashboard", href: "/dashboard" },
              { label: "users", href: "/dashboard/users" },
-             { label: "Edit", href: `/dashboard/users/create` },
+             { label: "Create", href: `/dashboard/users/create` },
            ]}
            actions={<ThemeToggle />}
          />
