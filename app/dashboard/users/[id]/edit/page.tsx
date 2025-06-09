@@ -55,15 +55,12 @@ export default async function Page({
   const session = await auth.api.getSession({
     headers: await headers(),
   });
-
-  if (!session) {
-    redirect('/login'); // Or your appropriate login page
-  }
+  
   // Check permission to update users
-  const canUpdateUsers = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["update"] } } });
-  if (!canUpdateUsers?.success) {
-    redirect('/dashboard'); // Or an access denied page
-  }
+  // const canUpdateUsers = await auth.api.hasPermission({ headers: await headers(), body: { permissions: { userResource: ["update"] } } });
+  // if (!canUpdateUsers?.success) {
+  //   redirect('/dashboard'); // Or an access denied page
+  // }
 
   const userProps: NavUserProps = {
     id: session?.user?.id || null,
