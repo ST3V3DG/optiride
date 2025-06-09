@@ -14,29 +14,24 @@ import {
 } from "@/components/ui/popover"
 
 export function DatePicker({ date, setDate, className }: { date?: Date; setDate?: React.Dispatch<React.SetStateAction<Date>>; className?: string }) {
-//   const [date, setDate] = React.useState<Date>()
+  // const [date, setDate] = React.useState<Date>()
 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button
+      <Button
           variant={"outline"}
           className={cn(
-            "w-[280px] justify-start text-left font-normal",
+            "justify-start text-left font-normal",
             !date && "text-muted-foreground" || className
           )}
         >
-          <CalendarIcon className="mr-2 h-4 w-4" />
+          <CalendarIcon className="mr-2 size-4" />
           {date ? format(date, "PPP") : <span>Pick a date</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
-        <Calendar
-          mode="single"
-          selected={date}
-          onSelect={(day) => day && setDate?.(day)}
-          initialFocus
-        />
+        <Calendar mode="single" selected={date} onSelect={(day) => day && setDate?.(day)} />
       </PopoverContent>
     </Popover>
   )
