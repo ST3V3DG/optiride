@@ -10,7 +10,6 @@ import { PageHeader } from "@/components/page-header";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NavUserProps } from "@/lib/types";
-import { redirect } from "next/navigation";
 
 export const dynamicParams = false;
 
