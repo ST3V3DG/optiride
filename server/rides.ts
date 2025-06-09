@@ -84,7 +84,7 @@ export async function createRide(formData: z.infer<typeof rideActionSchema>) {
       date: validatedFields.data.date
     };
 
-    // const result = await db.insert(rides).values(rideData).execute();
+    const result = await db.insert(rides).values(rideData).execute();
 
     revalidatePath("/dashboard/rides");
     return { success: "Ride created successfully." };
