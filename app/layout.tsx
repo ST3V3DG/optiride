@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
+import { TanstackProvider } from "@/components/providers/tanstack-provider";
 
 export const metadata: Metadata = {
   title: "OptiRide Application",
@@ -16,7 +17,7 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <body
-        className={`antialiased text-lg`}
+        className={`text-lg antialiased`}
       >
         <ThemeProvider
           attribute="class"
@@ -25,7 +26,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Toaster className="first-letter:uppercase" position="top-center" />
+          <TanstackProvider>
           {children}
+          </TanstackProvider>
         </ThemeProvider>
       </body>
     </html>

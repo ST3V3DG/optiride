@@ -9,20 +9,23 @@ import { Car, Clock, Dot, Wallet } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import RideCard from "@/components/ride-card";
-import { RidesListProps, RideWithNames } from "@/lib/types";
+import { Ride, RidesListProps } from "@/lib/types";
 import Loader from "@/components/loader";
 
-export default function RidesList({ initialRides }: RidesListProps) {
-  const [rides, setRides] = useState(initialRides);
-  const [isLoading, setIsLoading] = useState(false);
+export default function RidesList({ initialRides = [] }: RidesListProps) {
+  const [allRides, setAllRides] = useState<Ride[]>(initialRides || []);
+  const [filteredRides, setFilteredRides] = useState<Ride[]>(
+    initialRides || []
+  );
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<string>("hour_of_departure");
   const [timeFilters, setTimeFilters] = useState<string[]>([]);
 
   // Update rides when initialRides prop changes
   useEffect(() => {
     setIsLoading(true);
-    console.log("initialRides changed in RidesList:", initialRides);
-    setRides(initialRides);
+    setAllRides(Array.isArray(initialRides) ? initialRides : []);
+    setFilteredRides(Array.isArray(initialRides) ? initialRides : []);
     setIsLoading(false);
   }, [initialRides]);
 
@@ -32,19 +35,23 @@ export default function RidesList({ initialRides }: RidesListProps) {
         ? current.filter((item) => item !== timeRange)
         : [...current, timeRange];
 
-      const filteredRides = filterRidesByTime(initialRides, newFilters);
-      const sortedRides = sortRides(filteredRides, sortBy);
-      setRides(sortedRides);
+      let result = [...allRides];
+      if (newFilters.length > 0) {
+        result = filterRidesByTime(allRides, newFilters);
+      }
+      // Apply current sort to the filtered results
+      result = sortRides(result, sortBy);
+      setFilteredRides(result);
 
       return newFilters;
     });
   };
 
-  const filterRidesByTime = (rides: RideWithNames[], filters: string[]) => {
-    if (filters.length === 0) return rides;
+  const filterRidesByTime = (rides: Ride[] = [], filters: string[] = []) => {
+    if (!Array.isArray(rides) || filters.length === 0) return rides || [];
 
     return rides.filter((ride) => {
-      const departureTime = ride.hour_of_departure;
+      const departureTime = ride?.hour_of_departure;
       if (!departureTime) return false;
 
       const [hours] = departureTime.split(":").map(Number);
@@ -66,7 +73,7 @@ export default function RidesList({ initialRides }: RidesListProps) {
     });
   };
 
-  const sortRides = (rides: RideWithNames[], sortBy: string) => {
+  const sortRides = (rides: Ride[], sortBy: string) => {
     return [...rides].sort((a, b) => {
       switch (sortBy) {
         case "hour_of_departure":
@@ -89,21 +96,22 @@ export default function RidesList({ initialRides }: RidesListProps) {
 
   const handleSort = (newSortBy: string) => {
     setSortBy(newSortBy);
-    const filteredRides = filterRidesByTime(initialRides, timeFilters);
-    const sortedRides = sortRides(filteredRides, newSortBy);
-    setRides(sortedRides);
+    const filtered =
+      timeFilters.length > 0
+        ? filterRidesByTime(allRides, timeFilters)
+        : [...allRides];
+    setFilteredRides(sortRides(filtered, newSortBy));
   };
 
   return (
-    <div className="container mx-auto max-w-7xl pt-33 grid grid-cols-8 md:grid-cols-12 min-h-screen border-r border-l">
-      <div className="flex flex-col gap-4 justify-start p-2 border-r col-span-4">
+    <div className="container grid grid-cols-8 mx-auto max-w-7xl min-h-screen border-r border-l pt-33 md:grid-cols-12">
+      <div className="flex flex-col col-span-4 gap-4 justify-start p-2 border-r">
         <Card>
           <CardHeader className="flex justify-between">
             <span className="font-bold">Trier par</span>
             <Button
               onClick={() => handleSort("hour_of_departure")}
-              className="font-bold cursor-pointer text-sm text-white hover:text-white"
-            >
+              className="text-sm font-bold text-white cursor-pointer hover:text-white">
               Réinitialiser
             </Button>
           </CardHeader>
@@ -116,8 +124,7 @@ export default function RidesList({ initialRides }: RidesListProps) {
                 />
                 <Label
                   htmlFor="hour_of_departure"
-                  className="flex justify-between items-center w-full"
-                >
+                  className="flex justify-between items-center w-full">
                   <span>Heure de départ</span>
                   <Clock className="size-5" />
                 </Label>
@@ -126,8 +133,7 @@ export default function RidesList({ initialRides }: RidesListProps) {
                 <RadioGroupItem value="hour_of_arrival" id="hour_of_arrival" />
                 <Label
                   htmlFor="hour_of_arrival"
-                  className="flex justify-between items-center w-full"
-                >
+                  className="flex justify-between items-center w-full">
                   <span>Heure d&apos;arrivée</span>
                   <Clock className="size-5" />
                 </Label>
@@ -136,8 +142,7 @@ export default function RidesList({ initialRides }: RidesListProps) {
                 <RadioGroupItem value="price" id="price" />
                 <Label
                   htmlFor="price"
-                  className="flex justify-between items-center w-full"
-                >
+                  className="flex justify-between items-center w-full">
                   <span>Prix</span>
                   <Wallet className="size-5" />
                 </Label>
@@ -146,8 +151,7 @@ export default function RidesList({ initialRides }: RidesListProps) {
                 <RadioGroupItem value="duration" id="duration" />
                 <Label
                   htmlFor="duration"
-                  className="flex justify-between items-center w-full"
-                >
+                  className="flex justify-between items-center w-full">
                   <span>Temps de trajet</span>
                   <Clock className="size-5" />
                 </Label>
@@ -175,12 +179,11 @@ export default function RidesList({ initialRides }: RidesListProps) {
                 />
                 <Label
                   htmlFor={id}
-                  className="flex justify-between items-center w-full text-sm"
-                >
+                  className="flex justify-between items-center w-full text-sm">
                   <span>{label}</span>
-                  <span className="text-muted-foreground font-bold">
+                  <span className="font-bold text-muted-foreground">
                     {
-                      rides.filter((ride) => {
+                      allRides.filter((ride) => {
                         const [hours] = (ride.hour_of_departure ?? "")
                           .split(":")
                           .map(Number);
@@ -210,18 +213,17 @@ export default function RidesList({ initialRides }: RidesListProps) {
           <TabsList className="grid w-full grid-cols-1 h-fit *:cursor-pointer">
             <TabsTrigger
               value="car"
-              className="flex justify-center items-center gap-2"
-            >
+              className="flex gap-2 justify-center items-center">
               <Car className="size-9" />
               <span className="text-xl">Voitures</span>
               <Dot className="size-6" />
-              <span className="text-xl">{rides.length}</span>
+              <span className="text-xl">{filteredRides.length}</span>
             </TabsTrigger>
           </TabsList>
           <TabsContent value="car">
             <div className="flex justify-between items-center px-2 pb-2 text-primary">
               {/* <span>
-                <span className="font-bold mr-1">
+                <span className="mr-1 font-bold">
                   {date
                     ? new Date(date).toLocaleDateString("fr-FR", {
                         weekday: "long",
@@ -233,15 +235,17 @@ export default function RidesList({ initialRides }: RidesListProps) {
                 </span>{" "}
                 {departure ?? "-"}, Cameroun → {arrival ?? "-"}, Cameroun
               </span> */}
-              <span>{rides.length} trajet(s) disponible(s)</span>
+              <span>{filteredRides.length} trajet(s) disponible(s)</span>
             </div>
             <ul className="w-full flex flex-col gap-4 overflow-y-scroll *:list-none">
               {isLoading ? (
                 <Loader />
-              ) : rides && rides.length > 0 ? (
-                rides.map((ride) => <RideCard key={ride.id} ride={ride} />)
+              ) : filteredRides && filteredRides.length > 0 ? (
+                filteredRides.map((ride) => (
+                  <RideCard key={ride.id} ride={ride} />
+                ))
               ) : (
-                <p className="flex items-center justify-center gap-2 py-4 font-bold text-foreground/50">
+                <p className="flex gap-2 justify-center items-center py-4 font-bold text-foreground/50">
                   <span>Aucun trajet prévu</span>
                 </p>
               )}

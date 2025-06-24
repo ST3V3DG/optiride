@@ -18,7 +18,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { City, Ride, User } from "@/db/schema";
 
 export function Combobox({
   collection,
@@ -32,7 +31,7 @@ export function Combobox({
   placeholder?: string;
   value: number | null | undefined;
   setValue: React.Dispatch<
-    React.SetStateAction<number | City | User | Ride | null>
+    React.SetStateAction<number | null>
   >;
 }) {
   const [open, setOpen] = React.useState(false);
@@ -51,11 +50,11 @@ export function Combobox({
           role="combobox"
           aria-expanded={open}
           // Ensure the button width applies correctly, default w-[200px] might be overridden
-          className={cn("w-full justify-between", className)} // Adjusted width handling
+          className={cn("justify-between w-full", className)} // Adjusted width handling
         >
           {/* Ensure label is displayed, handle potential null/undefined */}
           <span className="truncate">{selectedLabel}</span>
-          <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+          <ChevronsUpDown className="ml-2 opacity-50 size-4 shrink-0" />
         </Button>
       </PopoverTrigger>
       {/* Make PopoverContent width match the trigger */}

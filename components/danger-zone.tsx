@@ -5,30 +5,30 @@ export default function DangerZone({
   id,
   collectionName,
 }: {
-  id: number;
+  id: string;
   collectionName: string;
 }) {
   return (
-    <Card className="bg-red-500/40 justify-self-end">
+    <Card className="justify-self-end bg-red-500/40">
       <CardHeader>
         <CardTitle>Danger zone</CardTitle>
       </CardHeader>
-      <CardContent className="flex justify-between items-center gap-4">
+      <CardContent className="flex gap-4 justify-between items-center">
         <div>
           <p className="text-xl text-red-500">
             This is a danger zone. You can delete the record here.
           </p>
-          <p className="text-sm text-muted-foreground mb-4">
+          <p className="mb-4 text-sm text-muted-foreground">
             This action is irreversible and will delete all associated records.
           </p>
         </div>
-        {id && (
+        {id ? (
           <DeleteButton
             collectionName={collectionName}
             id={id}
             className="px-6"
           />
-        )}
+        ) : <></>}
       </CardContent>
     </Card>
   );

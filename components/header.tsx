@@ -1,51 +1,53 @@
-'use client'
+"use client";
 
-import Link from 'next/link';
-import Logo from './logo';
-import { Menu, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import React from 'react';
-import { ThemeToggle } from './theme-toggle';
-import LogoutButton from './logout-button';
-import { authClient } from '@/lib/auth-client';
+import Link from "next/link";
+import Logo from "./logo";
+import { Menu, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import React, { useState } from "react";
+import { ThemeToggle } from "./theme-toggle";
+import LogoutButton from "./logout-button";
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "@/lib/axios";
 
 const menuItems = [
-    { name: 'Accueil', href: '/' },
-    { name: 'Trajets', href: '/rides' },
-    { name: 'À propos', href: '/about' },
-    { name: 'Contact', href: '/contact' },
-]
+  { name: "Accueil", href: "/" },
+  { name: "Trajets", href: "/rides" },
+  // { name: "À propos", href: "/about" },
+  // { name: "Contact", href: "/contact" },
+];
 
 export default function Header({
   children,
 }: Readonly<{
   children?: React.ReactNode;
 }>) {
-  const [menuState, setMenuState] = React.useState(false);
-  const session = authClient.useSession();
-  console.log(session);
+  const query = useQuery({
+    queryKey: ["auth-user"],
+    queryFn: () => apiClient.get("/auth-user"),
+    refetchOnWindowFocus: false,
+  });
+  const [menuState, setMenuState] = useState(false);
+
   return (
     <header>
       <nav
         data-state={menuState && "active"}
-        className="bg-background/50 fixed w-full backdrop-blur-3xl z-1000 border-b"
-      >
-        <div className="mx-auto max-w-7xl px-2 transition-all duration-300">
-          <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
-            <div className="flex w-full items-center justify-between gap-12 lg:w-auto">
+        className="fixed w-full border-b backdrop-blur-3xl bg-background/50 z-1000">
+        <div className="px-2 mx-auto max-w-7xl transition-all duration-300">
+          <div className="flex relative flex-wrap gap-6 justify-between items-center py-3 lg:gap-0 lg:py-4">
+            <div className="flex gap-12 justify-between items-center w-full lg:w-auto">
               <Link
                 href="/"
                 aria-label="home"
-                className="flex items-center space-x-2"
-              >
+                className="flex items-center space-x-2">
                 <Logo />
               </Link>
 
               <button
                 onClick={() => setMenuState(!menuState)}
                 aria-label={menuState == true ? "Close Menu" : "Open Menu"}
-                className="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden"
-              >
+                className="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden">
                 <Menu className="in-data-[state=active]:rotate-180 in-data-[state=active]:scale-0 in-data-[state=active]:opacity-0 m-auto size-6 duration-200" />
                 <X className="in-data-[state=active]:rotate-0 in-data-[state=active]:scale-100 in-data-[state=active]:opacity-100 absolute inset-0 m-auto size-6 -rotate-180 scale-0 opacity-0 duration-200" />
               </button>
@@ -56,8 +58,7 @@ export default function Header({
                     <li key={index}>
                       <Link
                         href={item.href}
-                        className="dark:text-white text-black block font-semibold hover:bg-linear-to-br hover:from-primary hover:from-0 hover:to-[#1a5fb4] hover:to-50 hover:text-transparent hover:bg-clip-text"
-                      >
+                        className="dark:text-white text-black block font-semibold hover:bg-linear-to-br hover:from-primary hover:from-0 hover:to-[#1a5fb4] hover:to-50 hover:text-transparent hover:bg-clip-text">
                         <span>{item.name}</span>
                       </Link>
                     </li>
@@ -73,26 +74,31 @@ export default function Header({
                     <li key={index}>
                       <Link
                         href={item.href}
-                        className="dark:text-white text-black block hover:bg-linear-to-br hover:from-primary hover:from-0 hover:to-[#1a5fb4] hover:to-50 hover:text-transparent hover:bg-clip-text"
-                      >
+                        className="dark:text-white text-black block hover:bg-linear-to-br hover:from-primary hover:from-0 hover:to-[#1a5fb4] hover:to-50 hover:text-transparent hover:bg-clip-text">
                         <span>{item.name}</span>
                       </Link>
                     </li>
                   ))}
                 </ul>
               </div>
-              <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
+              <div className="flex flex-col space-y-3 w-full sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
                 <ThemeToggle />
-                { !session.data ? <><Button asChild variant="glow">
-                  <Link href="/login">
-                    <span>Se connecter</span>
-                  </Link>
-                </Button>
-                <Button className='dark:text-white' asChild>
-                  <Link href="/register">
-                    <span>S&apos;inscrire</span>
-                  </Link>
-                </Button></> : <LogoutButton className='bg-secondary text-white cursor-pointer dark:text-secondary-foreground shadow-xs hover:bg-secondary/80' /> }
+                {!query.data?.data ? (
+                  <>
+                    <Button asChild variant="glow">
+                      <Link href="/login">
+                        <span>Se connecter</span>
+                      </Link>
+                    </Button>
+                    <Button className="dark:text-white" asChild>
+                      <Link href="/register">
+                        <span>S&apos;inscrire</span>
+                      </Link>
+                    </Button>
+                  </>
+                ) : (
+                  <LogoutButton className="cursor-pointer dark:text-white"/>
+                )}
               </div>
             </div>
           </div>

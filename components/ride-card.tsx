@@ -7,22 +7,22 @@ import {
   CardDescription,
   CardContent,
 } from "./ui/card";
-import { RideWithNames } from "@/lib/types";
+import { Ride } from "@/lib/types";
 import Image from "next/image";
 import { Separator } from "./ui/separator";
 import Link from "next/link";
 
-export default function RideCard({ ride }: { ride: RideWithNames }) {
+export default function RideCard({ ride }: { ride: Ride }) {
   return (
     <li>
       <Link href={`/rides/${ride.id}`} target="_blank">
-        <Card className="w-full py-4">
+        <Card className="py-4 w-full">
           <CardHeader>
             <div className="grid grid-cols-5 gap-2">
               <CardTitle className="col-span-4">
-                {ride.departure_city} - {ride.arrival_city}
+                {ride.place_of_departure.name} - {ride.place_of_arrival.name}
               </CardTitle>
-              <div className="text-xl text-primary font-bold col-span-1 row-span-2 self-center">
+              <div className="col-span-1 row-span-2 self-center text-xl font-bold text-primary">
                 {Number(ride.price).toLocaleString("fr-FR", {
                   style: "currency",
                   currency: "XAF",
@@ -45,8 +45,8 @@ export default function RideCard({ ride }: { ride: RideWithNames }) {
               <div>
                 <div className="flex">
                   <CarIcon />
-                  <div className="flex font-bold capitalize items-center ml-2">
-                    <span className="text-sm text-muted-foreground font-normal ml-2">
+                  <div className="flex items-center ml-2 font-bold capitalize">
+                    <span className="ml-2 text-sm font-normal text-muted-foreground">
                       Note générale :
                     </span>
                     <Star className="ml-2 size-4 text-muted-foreground" />
@@ -56,15 +56,16 @@ export default function RideCard({ ride }: { ride: RideWithNames }) {
                   </div>
                 </div>
               </div>
-              <div className="flex justify-center items-center gap-4">
-                <span className="capitalize">{ride.driver_name}</span>
-                <div className="size-10 border rounded-full bg-foreground/50 flex place-content-center place-items-center">
-                  {ride.driver_image ? (
+              <div className="flex gap-4 justify-center items-center">
+                <span className="capitalize">{ride.driver.name}</span>
+                <div className="flex place-content-center place-items-center rounded-full border size-10 bg-foreground/50">
+                  {ride.driver.image ? (
                     <Image
                       height={500}
                       width={500}
-                      alt={String(ride.driver_name)}
-                      src={ride.driver_image}
+                      className="overflow-hidden rounded-full"
+                      alt={String(ride.driver.name)}
+                      src={'/' + String(ride.driver.image)}
                     />
                   ) : (
                     <User />

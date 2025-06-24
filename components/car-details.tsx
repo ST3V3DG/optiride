@@ -17,39 +17,39 @@ export default function CarDetails({ car }: { car: CarWithDriverName }) {
         </CardHeader>
         <Separator />
         <CardContent>
-          <ul className="flex flex-col justify-between gap-4 pt-4">
+          <ul className="flex flex-col gap-4 justify-between pt-4">
             <li>
-              <span className="font-medium mr-2">Driver:</span>
+              <span className="mr-2 font-medium">Driver:</span>
               <span className="capitalize">{car.driver_name || "N/A"}</span>
             </li>
             <li>
-              <span className="font-medium mr-2">Brand:</span>
+              <span className="mr-2 font-medium">Brand:</span>
               <span className="capitalize">{car.brand || "N/A"}</span>
             </li>
             <li>
-              <span className="font-medium mr-2">Model:</span>
+              <span className="mr-2 font-medium">Model:</span>
               <span className="capitalize">{car.model || "N/A"}</span>
             </li>
             <li>
-              <span className="font-medium mr-2">Year:</span>
+              <span className="mr-2 font-medium">Year:</span>
               <span className="capitalize">{car.year || "N/A"}</span>
             </li>
             <li>
-              <span className="font-medium mr-2">Comfort:</span>
+              <span className="mr-2 font-medium">Comfort:</span>
               <span className="capitalize">{car.comfort || "N/A"}</span>
             </li>
             <li>
-              <span className="font-medium mr-2">Registration:</span>
+              <span className="mr-2 font-medium">Registration:</span>
               <span className="uppercase">{car.registration || "N/A"}</span>
             </li>
             <li>
-              <span className="font-medium mr-2">Number of seats:</span>
+              <span className="mr-2 font-medium">Number of seats:</span>
               <span className="capitalize">{car.available_seats || "N/A"}</span>
             </li>
           </ul>
         </CardContent>
       </Card>
-      <DangerZone id={Number(car.id)} collectionName="cars" />
+      <DangerZone id={String(car.id)} collectionName="cars" />
     </div>
   );
 }

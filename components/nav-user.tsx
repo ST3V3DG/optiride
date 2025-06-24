@@ -42,21 +42,21 @@ export default function NavUserClient({ user, isMobile }: NavUserClientProps) {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
+              <Avatar className="w-8 h-8 rounded-lg">
                 <AvatarImage
                   src={user?.image ?? ""}
                   alt={user?.name ?? ""}
                   className="object-cover"
                 />
-                <AvatarFallback className="rounded-lg uppercase">
+                <AvatarFallback className="uppercase rounded-lg">
                   {user?.name?.slice(0, 2) ?? "US"}
                 </AvatarFallback>
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">
+              <div className="grid flex-1 text-sm leading-tight text-left">
+                <span className="font-medium truncate">
                   {user?.name ?? "User"}
                 </span>
-                <span className="truncate text-xs">
+                <span className="text-xs truncate">
                   {user?.email ?? "email@example.com"}
                 </span>
               </div>
@@ -71,20 +71,20 @@ export default function NavUserClient({ user, isMobile }: NavUserClientProps) {
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
+                <Avatar className="w-8 h-8 rounded-lg">
                   <AvatarImage
                     src={user?.image ?? ""}
                     alt={user?.name ?? ""}
                   />
-                  <AvatarFallback className="rounded-lg uppercase">
+                  <AvatarFallback className="uppercase rounded-lg">
                     {user?.name?.slice(0, 1) ?? "U"}
                   </AvatarFallback>
                 </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">
+                <div className="grid flex-1 text-sm leading-tight text-left">
+                  <span className="font-medium truncate">
                     {user?.name ?? "User"}
                   </span>
-                  <span className="truncate text-xs">
+                  <span className="text-xs truncate">
                     {user?.email ?? "email@example.com"}
                   </span>
                 </div>
@@ -117,7 +117,7 @@ export default function NavUserClient({ user, isMobile }: NavUserClientProps) {
             <DropdownMenuSeparator />
             <DropdownMenuItem className="*:cursor-pointer *:text-white has-hover:bg-red-500/90 bg-red-500 group dark:bg-red-500/50 dark:has-hover:bg-red-500/70 justify-start">
               <LogOut className="group-hover:text-white" />
-              <LogoutButton className="bg-transparent hover:bg-transparent text-white flex-grow pl-0" />
+              <LogoutButton variant="outline" className="flex-grow pl-0 text-white bg-transparent border-0 hover:bg-transparent" />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

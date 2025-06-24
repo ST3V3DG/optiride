@@ -13,19 +13,24 @@ import {
 } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "@/components/ui/sidebar";
-import { NavUserProps } from "@/lib/types";
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "@/lib/axios";
 
 function isActive({ url, pathname }: { url: string; pathname: string }) {
   return pathname.startsWith(url);
 }
 
-interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  user: NavUserProps | null;
-}
-
-export function AppSidebar({ user, ...props }: AppSidebarProps) {
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   const { isMobile } = useSidebar();
+  
+  const query = useQuery({
+    queryKey: ["auth-user"],
+    queryFn: () => apiClient.get("/auth-user"),
+    refetchOnWindowFocus: false,
+  });
+
+  const user = query.data?.data;
 
   // Determine if the user can view the "Users" link
   // This assumes authClient.organization.checkRolePermission can access the current user's

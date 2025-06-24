@@ -1,27 +1,61 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { RideWithNames } from "@/lib/types";
 import RidesList from "@/components/rides-list";
 import SearchRides from "@/components/search-rides";
-import { RidesListProps } from "@/lib/types";
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "@/lib/axios";
+import { City, Ride, SearchParams } from "@/lib/types";
 
-export default function RidesClient({ initialRides }: RidesListProps) {
-  const [rides, setRides] = useState<RideWithNames[]>(initialRides);
+export default function RidesClient() {
+  const [searchHistory, setSearchHistory] = useState<SearchParams[]>([]);
+  const [searchParams, setSearchParams] = useState<SearchParams>({
+    departure_id: null,
+    arrival_id: null,
+    date: null,
+    // date: new Date().toISOString().split("T")[0],
+    seats: 1,
+  });
+  const [rides, setRides] = useState<Ride[]>([]);
 
+  // Fetch cities
+  const citiesQuery = useQuery({
+    queryKey: ["cities"],
+    queryFn: () => apiClient.get("/cities"),
+  });
+
+  // Fetch rides
+  const ridesQuery = useQuery({
+    queryKey: ["rides", searchParams],
+    queryFn: async () => {
+      // if (!searchParams.departure_id || !searchParams.arrival_id)
+      //   return { data: { data: [] } };
+      return apiClient.get("/rides", { params: searchParams });
+    },
+    refetchOnWindowFocus: false,
+  });
+
+  // Update rides state when query data changes
   useEffect(() => {
-    console.log("Rides state updated:", rides);
-  }, [rides]);
+    if (ridesQuery.data?.data?.data) {
+      setRides(ridesQuery.data.data.data);
+    }
+  }, [ridesQuery.data]);
 
-  const handleSearch = (searchResults: RideWithNames[]) => {
-    console.log("Search results received:", searchResults);
-    setRides(searchResults);
+  const handleSearch = (params: SearchParams) => {
+    setSearchHistory((prev) => [params, ...prev.slice(0, 3)]);
+    console.log(searchHistory);
+    setSearchParams(params);
   };
 
   return (
     <>
-      <SearchRides onSearch={handleSearch} />
-      <div className="container mx-auto px-4">
+      <SearchRides
+        locations={(citiesQuery.data?.data.data as City[]) || []}
+        onSearch={handleSearch}
+        isLoading={citiesQuery.isPending || ridesQuery.isPending}
+      />
+      <div className="container px-4 mx-auto">
         <RidesList initialRides={rides} />
       </div>
     </>

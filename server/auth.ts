@@ -1,53 +1,59 @@
 "use server"
 
-import { auth } from "@/lib/auth";
-import { APIError } from "better-auth/api";
+import { apiClient } from "@/lib/axios";
+import { cookies } from "next/headers";
 
-export async function LogIn( email: string, password: string, callbackURL?: string ) {
-    try {
-        const response = await auth.api.signInEmail({
-            body: {
-                email: `${email}`,
-                password: `${password}`,
-                callbackURL: `${callbackURL}` || `/`,
-            },
-        })
+export async function Register(name: string, email: string, password: string, password_confirmation: string)
+{
+    // const response = await apiClient.post('/register', { name: name, email: email, password: password, password_confirmation: password_confirmation })
+
+    return  await apiClient.post('/api/register', { name: name, email: email, password: password, password_confirmation: password_confirmation });
+}
+
+export async function Login(email: string, password: string)
+{
+    try
+    {
+        const response = await apiClient.post('/api/login', { email: email, password: password });
+        const token = response.data.token;
+        const cookieStore = await cookies();
+        
+        cookieStore.set("token",
+            token,
+            // {
+            //     httpOnly: true, // Recommended for security
+            //     secure: process.env.NODE_ENV === "production", // Use secure in production
+            //     maxAge: 60 * 60 * 24 * 7, // 1 week
+            //     path: "/",
+            // }
+        );
+        apiClient.defaults.headers.common[ 'Authorization' ] = `Bearer ${token}`;
+        apiClient.defaults.headers.common[ 'Accept' ] = 'application/vnd.api+json';
+        apiClient.defaults.headers.common[ 'Content-Type' ] = 'application/vnd.api+json';
+        apiClient.defaults.withCredentials = true;
+        apiClient.defaults.withXSRFToken = true;
         return {success: true, data: response};
-    } catch (error) {
-        if (error instanceof APIError) {
-            console.log(error.message, error.status)
-        }
-        console.error("Error while logging in", error);
-        return {success: false, error: error};
+    } catch (error: any) {
+        throw new Error(error.message);
+    }  
+}
+
+export async function Logout() {
+    try {
+        const response = await apiClient.post('/logout');
+        const cookieStore = await cookies();
+        cookieStore.delete("token");
+        delete apiClient.defaults.headers.common['Authorization'];
+        delete apiClient.defaults.headers.common['Accept'];
+        delete apiClient.defaults.headers.common['Content-Type'];
+        apiClient.defaults.withCredentials = false;
+        apiClient.defaults.withXSRFToken = false;
+        return {success: true, data: response};
+    } catch (error: any) {
+        throw new Error(error.message);
     }
 }
 
-export async function SignUp( name: string, email: string, password: string, callbackURL?: string ) {
-    try {
-        const response = await auth.api.signUpEmail({
-            body: {
-                name: `${name}`,
-                email: `${email}`,
-                password: `${password}`,
-                callbackURL: `${callbackURL}` || `/`,
-            },
-        })
-        return {success: true, data: response};
-    } catch (error) {
-        if (error instanceof APIError) {
-            console.log(error.message, error.status)
-            console.log("Error while signing up", error);
-        }
-        return {success: false, error: error};
-    }
+export async function ForgotPassword(email: string) {
+        
 }
-
-// export async function LogOut() {
-//     try {
-//         const response = await authClient.signOut();
-//         return {success: true, data: response};
-//     } catch (error) {
-//         console.error("Error while logging out", error);
-//         return {success: false, error: error};
-//     }
-// }

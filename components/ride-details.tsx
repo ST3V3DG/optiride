@@ -31,13 +31,13 @@ export default function RideDetails( { ride }: { ride: RideWithNames } ) {
         </CardHeader>
         <Separator />
         <CardContent>
-          <ul className="flex flex-col justify-between gap-4">
+          <ul className="flex flex-col gap-4 justify-between">
             <li>
-              <span className="font-medium mr-2">Driver:</span>
+              <span className="mr-2 font-medium">Driver:</span>
               <span className="capitalize">{ride.driver_name || "N/A"}</span>
             </li>
             <li>
-              <span className="font-medium mr-2">Date:</span>
+              <span className="mr-2 font-medium">Date:</span>
               {ride.date
                 ? new Date(ride.date).toLocaleDateString("en-US", {
                     weekday: "long",
@@ -48,21 +48,21 @@ export default function RideDetails( { ride }: { ride: RideWithNames } ) {
                 : "N/A"}
             </li>
             <li>
-              <span className="font-medium mr-2">Departure:</span>
+              <span className="mr-2 font-medium">Departure:</span>
               <span className="capitalize">{ride.departure_city || "N/A"}</span>
-              <span className="text-sm text-muted-foreground ml-2">
+              <span className="ml-2 text-sm text-muted-foreground">
                 ({ride.collection_point || "N/A"})
               </span>
             </li>
             <li>
-              <span className="font-medium mr-2">Arrival:</span>
+              <span className="mr-2 font-medium">Arrival:</span>
               <span className="capitalize">{ride.arrival_city || "N/A"}</span>
-              <span className="text-sm text-muted-foreground ml-2">
+              <span className="ml-2 text-sm text-muted-foreground">
                 ({ride.drop_off_point || "N/A"})
               </span>
             </li>
             <li>
-              <span className="font-medium mr-2">Hour of departure:</span>
+              <span className="mr-2 font-medium">Hour of departure:</span>
               <span className="capitalize">
                 {ride.hour_of_departure
                   ? `${departureHour}h ${departureMinute}m`
@@ -70,7 +70,7 @@ export default function RideDetails( { ride }: { ride: RideWithNames } ) {
               </span>
             </li>
             <li>
-              <span className="font-medium mr-2">Hour of arrival:</span>
+              <span className="mr-2 font-medium">Hour of arrival:</span>
               <span className="capitalize">
                 {ride.hour_of_arrival
                   ? `${arrivalHour}h ${arrivalMinute}m`
@@ -78,7 +78,7 @@ export default function RideDetails( { ride }: { ride: RideWithNames } ) {
               </span>
             </li>
             <li>
-              <span className="font-medium mr-2">Duration:</span>
+              <span className="mr-2 font-medium">Duration:</span>
               {ride.duration ? (
                 <span className="capitalize">
                   {String(Math.floor(ride.duration / 60)).padStart(2, "0")}h
@@ -89,11 +89,11 @@ export default function RideDetails( { ride }: { ride: RideWithNames } ) {
               )}
             </li>
             <li>
-              <span className="font-medium mr-2">Price:</span>
+              <span className="mr-2 font-medium">Price:</span>
               <span className="capitalize">{ride.price || "N/A"}</span>
             </li>
             <li>
-              <span className="font-medium mr-2">Available seats:</span>
+              <span className="mr-2 font-medium">Available seats:</span>
               <span className="capitalize">
                 {ride.available_seats || "N/A"}
               </span>
@@ -101,7 +101,7 @@ export default function RideDetails( { ride }: { ride: RideWithNames } ) {
           </ul>
         </CardContent>
       </Card>
-      <DangerZone id={Number(ride.id)} collectionName="rides" />
+      <DangerZone id={String(ride.id)} collectionName="rides" />
     </div>
   );
 }

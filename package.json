@@ -26,18 +26,16 @@
     "@radix-ui/react-tooltip": "^1.2.7",
     "@tabler/icons-react": "^3.34.0",
     "@tanstack/react-form": "^1.12.2",
+    "@tanstack/react-query": "^5.80.7",
     "@tanstack/react-table": "^8.21.3",
     "@types/nodemailer": "^6.4.17",
-    "better-auth": "^1.2.8",
+    "axios": "^1.10.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
-    "drizzle-orm": "^0.43.1",
-    "drizzle-seed": "^0.3.1",
     "lucide-react": "^0.487.0",
     "motion": "^12.16.0",
-    "mysql2": "^3.14.1",
     "next": "15.2.4",
     "next-themes": "^0.4.6",
     "nodemailer": "^7.0.3",
@@ -55,6 +53,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@tailwindcss/postcss": "^4.1.8",
+    "@tanstack/eslint-plugin-query": "^5.78.0",
     "@types/node": "^20.19.0",
     "@types/react": "^19.1.6",
     "@types/react-dom": "^19.1.6",
@@ -67,5 +66,5 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
-  "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
+  "packageManager": "pnpm@10.12.1"
 }
