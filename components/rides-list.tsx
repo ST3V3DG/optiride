@@ -237,7 +237,7 @@ export default function RidesList({ initialRides = [] }: RidesListProps) {
               </span> */}
               <span>{filteredRides.length} trajet(s) disponible(s)</span>
             </div>
-            <ul className="w-full flex flex-col gap-4 overflow-y-scroll *:list-none">
+            <ul className="w-full flex flex-col gap-4 *:list-none max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-hidden">
               {isLoading ? (
                 <Loader />
               ) : filteredRides && filteredRides.length > 0 ? (

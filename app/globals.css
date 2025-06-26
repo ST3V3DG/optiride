@@ -210,4 +210,8 @@
   body {
     @apply bg-background text-foreground;
   }
+  .scrollbar-hidden {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
 }

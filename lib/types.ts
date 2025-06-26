@@ -81,7 +81,7 @@ export type NavUserProps = {
 export type SearchParams = {
   departure_id: number | null;
   arrival_id: number | null;
-  date: string | null;
+  date: string;
   seats: number;
 }
 

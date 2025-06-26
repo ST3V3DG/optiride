@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Combobox } from "@/components/combobox";
 import { useState, useMemo } from "react";
@@ -16,10 +17,24 @@ export default function SearchRides({
   isLoading,
 }: SearchRidesProps) {
   // États pour les champs du formulaire
-  const [departureId, setDepartureId] = useState<number | null>(null);
-  const [arrivalId, setArrivalId] = useState<number | null>(null);
-  const [date, setDate] = useState<Date>(new Date());
-  const [seats, setSeats] = useState<number>(1);
+  const searchParams = useSearchParams();
+  const departureIdParam = searchParams.get("departure_id");
+  const arrivalIdParam = searchParams.get("arrival_id");
+  const dateParam = searchParams.get("date");
+  const seatsParam = searchParams.get("seats");
+
+  const [departureId, setDepartureId] = useState<number | null>(
+    departureIdParam ? parseInt(departureIdParam) : null
+  );
+  const [arrivalId, setArrivalId] = useState<number | null>(
+    arrivalIdParam ? parseInt(arrivalIdParam) : null
+  );
+  const [date, setDate] = useState<Date>(
+    dateParam ? new Date(dateParam) : new Date()
+  );
+  const [seats, setSeats] = useState<number>(
+    seatsParam ? parseInt(seatsParam) : 1
+  );
 
   // Fonction de validation
   const validateSearch = (params: SearchParams) => {
