@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import SearchRides from "@/components/search-rides";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/axios";
@@ -14,6 +14,7 @@ import Pricing from "@/components/sections/pricing/default";
 import CTA from "@/components/sections/cta/default";
 import Footer from "@/components/footer";
 import { useRouter } from "next/navigation";
+import Loader from "@/components/loader";
 
 export default function Page() {
   const router = useRouter();
@@ -66,11 +67,13 @@ export default function Page() {
   return (
     <>
       <Header />
-      <SearchRides
-        locations={(citiesQuery.data?.data.data as City[]) || []}
-        onSearch={handleSearch}
-        isLoading={citiesQuery.isPending || ridesQuery.isPending}
-      />
+      <Suspense fallback={<Loader />}>
+        <SearchRides
+          locations={(citiesQuery.data?.data.data as City[]) || []}
+          onSearch={handleSearch}
+          isLoading={citiesQuery.isPending || ridesQuery.isPending}
+        />
+      </Suspense>
       <Hero />
       <Logos />
       <Items />
