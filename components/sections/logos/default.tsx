@@ -10,7 +10,7 @@ import { Badge } from "../../ui/badge";
 import Logo from "../../ui/logo";
 import { Section } from "../../ui/section";
 
-interface LogosProps {
+type LogosProps = {
   title?: string;
   badge?: ReactNode | false;
   logos?: ReactNode[] | false;

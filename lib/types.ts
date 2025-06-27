@@ -87,6 +87,7 @@ export type SearchParams = {
 
 export type RidesListProps = {
   initialRides: Ride[];
+  isLoading: boolean;
 }
 
 export type UserFormProps = {

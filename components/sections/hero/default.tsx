@@ -1,7 +1,5 @@
 import { ArrowRightIcon } from "lucide-react";
 import { ReactNode } from "react";
-
-// import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
 import Github from "@/components/logos/github";
@@ -12,7 +10,7 @@ import { Mockup, MockupFrame } from "@/components/ui/mockup";
 import Screenshot from "@/components/ui/screenshot";
 import { Section } from "@/components/ui/section";
 
-interface HeroButtonProps {
+type HeroButtonProps = {
   href: string;
   text: string;
   variant?: ButtonProps["variant"];
@@ -20,7 +18,7 @@ interface HeroButtonProps {
   iconRight?: ReactNode;
 }
 
-interface HeroProps {
+type HeroProps = {
   title?: string;
   description?: string;
   mockup?: ReactNode | false;

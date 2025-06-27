@@ -13,13 +13,13 @@ import { ReactNode } from "react";
 import { Item, ItemDescription,ItemIcon, ItemTitle } from "../../ui/item";
 import { Section } from "../../ui/section";
 
-interface ItemProps {
+type ItemProps = {
   title: string;
   description: string;
   icon: ReactNode;
 }
 
-interface ItemsProps {
+type ItemsProps = {
   title?: string;
   items?: ItemProps[] | false;
   className?: string;

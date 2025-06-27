@@ -21,7 +21,9 @@ export default function RidesClient() {
   const [searchParams, setSearchParams] = useState<SearchParams>({
     departure_id: departure_id ? Number(departure_id) : null,
     arrival_id: arrival_id ? Number(arrival_id) : null,
-    date: date ? new Date(date).toISOString().split("T")[0] : new Date().toISOString().split("T")[0],
+    date: date
+      ? new Date(date).toISOString().split("T")[0]
+      : new Date().toISOString().split("T")[0],
     seats: seats ? Number(seats) : 1,
   });
   const [rides, setRides] = useState<Ride[]>([]);
@@ -73,7 +75,10 @@ export default function RidesClient() {
         isLoading={citiesQuery.isPending || ridesQuery.isPending}
       />
       <div className="container px-4 mx-auto">
-        <RidesList initialRides={rides} />
+        <RidesList
+          initialRides={rides}
+          isLoading={citiesQuery.isPending || ridesQuery.isPending}
+        />
       </div>
     </>
   );

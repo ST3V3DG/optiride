@@ -95,9 +95,9 @@ export default function SearchRides({
   };
 
   return (
-    <div className="fixed top-16 py-4 w-full border-b backdrop-blur-3xl z-1000 bg-background/50">
+    <div className="md:fixed md:top-16 py-4 w-full border-b backdrop-blur-3xl -z-1 md:z-1000 bg-background/50">
       <form
-        className="grid grid-cols-1 gap-2 place-content-center px-2 mx-auto w-full max-w-7xl md:grid-cols-2 lg:grid-cols-9"
+        className="grid grid-cols-1 gap-2 place-content-center px-2 mx-auto w-full max-w-7xl md:grid-cols-2 lg:grid-cols-9 pt-12 md:pt-0"
         onSubmit={handleSubmit}>
         <Combobox
           collection={locationOptions}
@@ -127,8 +127,7 @@ export default function SearchRides({
           className="lg:col-span-2"
         />
         <Button
-          // variant="glow"
-          className="w-32 cursor-pointer dark:text-white"
+          className="w-full md:w-32 cursor-pointer dark:text-white"
           type="submit"
           disabled={isLoading}>
           {isLoading ? (

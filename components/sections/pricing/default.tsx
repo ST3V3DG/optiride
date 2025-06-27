@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { PricingColumn, PricingColumnProps } from "../../ui/pricing-column";
 import { Section } from "../../ui/section";
 
-interface PricingProps {
+type PricingProps = {
   title?: string | false;
   description?: string | false;
   plans?: PricingColumnProps[] | false;
@@ -32,7 +32,7 @@ export default function Pricing({
         "4 custom animations",
       ],
       variant: "default",
-      className: "hidden lg:flex",
+      // className: "hidden lg:flex",
     },
     {
       name: "Pro",

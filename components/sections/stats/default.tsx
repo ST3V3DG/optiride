@@ -1,13 +1,13 @@
 import { Section } from "../../ui/section";
 
-interface StatItemProps {
+type StatItemProps = {
   label?: string;
   value: string | number;
   suffix?: string;
   description?: string;
 }
 
-interface StatsProps {
+type StatsProps = {
   items?: StatItemProps[] | false;
   className?: string;
 }

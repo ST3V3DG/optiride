@@ -6,7 +6,7 @@ import { Button, type ButtonProps } from "../../ui/button";
 import Glow from "../../ui/glow";
 import { Section } from "../../ui/section";
 
-interface CTAButtonProps {
+type CTAButtonProps = {
   href: string;
   text: string;
   variant?: ButtonProps["variant"];
@@ -14,7 +14,7 @@ interface CTAButtonProps {
   iconRight?: ReactNode;
 }
 
-interface CTAProps {
+type CTAProps = {
   title?: string;
   buttons?: CTAButtonProps[] | false;
   className?: string;
@@ -44,6 +44,7 @@ export default function CTA({
                 key={index}
                 variant={button.variant || "default"}
                 size="lg"
+                className="dark:text-white"
                 asChild
               >
                 <a href={button.href}>
