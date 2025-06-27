@@ -41,7 +41,7 @@ export default function RideCard({ ride }: { ride: Ride }) {
           </CardHeader>
           <Separator />
           <CardContent>
-            <div className="flex justify-between items-center">
+            <div className="hidden md:flex justify-between items-center">
               <div>
                 <div className="flex">
                   <CarIcon />
@@ -65,12 +65,41 @@ export default function RideCard({ ride }: { ride: Ride }) {
                       width={500}
                       className="overflow-hidden rounded-full"
                       alt={String(ride.driver.name)}
-                      src={'/' + String(ride.driver.image)}
+                      src={"/" + String(ride.driver.image)}
                     />
                   ) : (
                     <User />
                   )}
                 </div>
+              </div>
+            </div>
+            <div className="flex md:hidden justify-between items-center">
+              <div className="w-full flex justify-between items-center">
+                <div className="flex gap-4 justify-center items-center">
+                  <div className="flex place-content-center place-items-center rounded-full border size-10 bg-foreground/50">
+                    {ride.driver.image ? (
+                      <Image
+                        height={500}
+                        width={500}
+                        className="overflow-hidden rounded-full"
+                        alt={String(ride.driver.name)}
+                        src={"/" + String(ride.driver.image)}
+                      />
+                    ) : (
+                      <User />
+                    )}
+                  </div>
+                  <div className="flex flex-col justify-between">
+                    <span className="capitalize">{ride.driver.name}</span>
+                    <div className="flex items-center font-bold capitalize">
+                      <Star className="size-4 text-muted-foreground" />
+                      <span className="text-muted-foreground font-normal text-sm ml-0.5">
+                        4,5
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <CarIcon />
               </div>
             </div>
           </CardContent>
