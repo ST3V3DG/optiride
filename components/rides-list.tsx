@@ -11,22 +11,21 @@ import { Button } from "@/components/ui/button";
 import RideCard from "@/components/ride-card";
 import { Ride, RidesListProps } from "@/lib/types";
 import Loader from "@/components/loader";
+import NoData from "./no-data";
 
-export default function RidesList({ initialRides = [] }: RidesListProps) {
+export default function RidesList({ initialRides = [], isLoading = false }: RidesListProps) {
   const [allRides, setAllRides] = useState<Ride[]>(initialRides || []);
   const [filteredRides, setFilteredRides] = useState<Ride[]>(
     initialRides || []
   );
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  // const [isLoading, setIsLoading] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<string>("hour_of_departure");
   const [timeFilters, setTimeFilters] = useState<string[]>([]);
 
   // Update rides when initialRides prop changes
-  useEffect(() => {
-    setIsLoading(true);
+  useEffect(() => {;
     setAllRides(Array.isArray(initialRides) ? initialRides : []);
     setFilteredRides(Array.isArray(initialRides) ? initialRides : []);
-    setIsLoading(false);
   }, [initialRides]);
 
   const handleTimeFilterChange = (timeRange: string) => {
@@ -104,8 +103,8 @@ export default function RidesList({ initialRides = [] }: RidesListProps) {
   };
 
   return (
-    <div className="container grid grid-cols-8 mx-auto max-w-7xl min-h-screen border-r border-l pt-33 md:grid-cols-12">
-      <div className="flex flex-col col-span-4 gap-4 justify-start p-2 border-r">
+    <div className="container grid grid-cols-8 mx-auto max-w-7xl min-h-screen border-r border-l md:pt-33 md:grid-cols-12">
+      <div className="flex flex-col col-span-8 md:col-span-4 gap-4 justify-start p-2 border-r">
         <Card>
           <CardHeader className="flex justify-between">
             <span className="font-bold">Trier par</span>
@@ -245,9 +244,7 @@ export default function RidesList({ initialRides = [] }: RidesListProps) {
                   <RideCard key={ride.id} ride={ride} />
                 ))
               ) : (
-                <p className="flex gap-2 justify-center items-center py-4 font-bold text-foreground/50">
-                  <span>Aucun trajet prévu</span>
-                </p>
+                <NoData />
               )}
             </ul>
           </TabsContent>
