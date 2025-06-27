@@ -113,7 +113,7 @@ export default function SearchRides({
   };
 
   return (
-    <div className="lg:fixed lg:top-16 py-4 w-full border-b backdrop-blur-3xl -z-1 lg:z-1000 bg-background/50 md:pt-16">
+    <div className="lg:fixed lg:top-16 py-4 w-full border-b backdrop-blur-3xl -z-1 lg:z-1000 bg-background/50 md:pt-16 lg:pt-0">
       <form
         className="flex flex-col lg:flex-row gap-2 place-content-center px-2 mx-auto w-full max-w-7xl pt-12 md:pt-0"
         onSubmit={handleSubmit}>
