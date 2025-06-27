@@ -30,7 +30,7 @@ export function DatePicker({ date, setDate, className }: { date?: Date; setDate?
           {date ? format(date, "PPP") : <span>Pick a date</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-0 w-auto">
+      <PopoverContent className="p-0 w-auto z-1000">
         <Calendar mode="single" selected={date} onSelect={(day) => day && setDate?.(day)} />
       </PopoverContent>
     </Popover>

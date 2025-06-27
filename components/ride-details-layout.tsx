@@ -17,7 +17,7 @@ export default function RideDetailsLayout({ id }: { id: string }) {
   });
   const rideDetails = query.data?.data.data;
   return (
-    <div className="container px-2 pt-24 pb-8 mx-auto max-w-7xl min-h-screen border-r border-l">
+    <div className="container px-2 pt-24 pb-8 mx-auto max-w-6xl min-h-screen border-r border-l">
       {query.isPending ? (
         <Loader />
       ) : (
@@ -151,7 +151,7 @@ export default function RideDetailsLayout({ id }: { id: string }) {
                             {String(rideDetails?.arrivalDayOffset)}
                           </span> */}
                   </div>
-                  <div className="flex-grow">
+                  <div className="flex-grow lg:pt-6">
                     <div className="mb-2">
                       <p className="font-semibold text-primary">
                         {String(rideDetails?.place_of_departure.name)}{" "}

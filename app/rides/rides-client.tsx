@@ -74,7 +74,7 @@ export default function RidesClient() {
         onSearch={handleSearch}
         isLoading={citiesQuery.isPending || ridesQuery.isPending}
       />
-      <div className="container px-4 mx-auto">
+      <div className="container px-4 mx-auto max-w-6xl">
         <RidesList
           initialRides={rides}
           isLoading={citiesQuery.isPending || ridesQuery.isPending}

@@ -113,28 +113,28 @@ export default function SearchRides({
   };
 
   return (
-    <div className="md:fixed md:top-16 py-4 w-full border-b backdrop-blur-3xl -z-1 md:z-1000 bg-background/50">
+    <div className="lg:fixed lg:top-16 py-4 w-full border-b backdrop-blur-3xl -z-1 lg:z-1000 bg-background/50">
       <form
-        className="grid grid-cols-1 gap-2 place-content-center px-2 mx-auto w-full max-w-7xl md:grid-cols-2 lg:grid-cols-9 pt-12 md:pt-0"
+        className="flex flex-col lg:flex-row gap-2 place-content-center px-2 mx-auto w-full max-w-7xl pt-12 md:pt-0"
         onSubmit={handleSubmit}>
         <Combobox
           collection={locationOptions}
           value={departureId}
           setValue={setDepartureId}
-          className="lg:col-span-2 dark:bg-input/30"
+          className="grow-1 dark:bg-input/30"
           placeholder="Ville de départ"
         />
         <Combobox
           collection={locationOptions}
           value={arrivalId}
           setValue={setArrivalId}
-          className="lg:col-span-2 dark:bg-input/30"
+          className="grow-1 dark:bg-input/30"
           placeholder="Ville d'arrivée"
         />
         <DatePicker
           date={date}
           setDate={setDate}
-          className="lg:col-span-2 dark:bg-input/30"
+          className="grow-1 dark:bg-input/30 z-1000"
         />
         <Input
           type="number"
@@ -142,36 +142,38 @@ export default function SearchRides({
           min={1}
           onChange={(e) => setSeats(Number(e.target.value))}
           placeholder="Nombre de places"
-          className="lg:col-span-2"
+          className="grow-1"
         />
-        <Button
-          className="w-full md:w-32 cursor-pointer dark:text-white"
-          type="submit"
-          disabled={isLoading}>
-          {isLoading ? (
-            <Loader size="sm" />
-          ) : (
-            <>
-              <Search className="mr-0.5" />
-              <span className="text-sm">Rechercher</span>
-            </>
-          )}
-        </Button>
-        <Button
-          className="w-full md:w-32 cursor-pointer dark:text-white"
-          type="reset"
-          variant="outline"
-          disabled={isLoading}
-          onClick={handleReset}>
-          {isLoading ? (
-            <Loader size="sm" />
-          ) : (
-            <>
-              <IconReload className="mr-0.5" />
-              <span className="text-sm">Reinitialiser</span>
-            </>
-          )}
-        </Button>
+        <div className="flex justify-center items-center gap-1 shrink-1">
+          <Button
+            className="w-full md:w-32 cursor-pointer dark:text-white flex lg:justify-between justify-center items-center gap-1"
+            type="submit"
+            disabled={isLoading}>
+            {isLoading ? (
+              <Loader size="sm" />
+            ) : (
+              <>
+                <Search />
+                <span className="text-sm">Rechercher</span>
+              </>
+            )}
+          </Button>
+          <Button
+            className="w-full md:max-w-32 md:w-fit cursor-pointer dark:text-white flex lg:justify-between justify-center items-center gap-1"
+            type="reset"
+            variant="outline"
+            disabled={isLoading}
+            onClick={handleReset}>
+            {isLoading ? (
+              <Loader size="sm" />
+            ) : (
+              <>
+                <IconReload />
+                <span className="text-sm lg:hidden">Reinitialiser</span>
+              </>
+            )}
+          </Button>
+        </div>
       </form>
     </div>
   );

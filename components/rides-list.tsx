@@ -103,7 +103,7 @@ export default function RidesList({ initialRides = [], isLoading = false }: Ride
   };
 
   return (
-    <div className="container grid grid-cols-8 mx-auto max-w-7xl min-h-screen border-r border-l md:pt-33 md:grid-cols-12">
+    <div className="container grid grid-cols-8 mx-auto max-w-7xl min-h-screen border-r border-l lg:pt-33 md:grid-cols-12">
       <div className="flex flex-col col-span-8 md:col-span-4 gap-4 justify-start p-2 border-r">
         <Card>
           <CardHeader className="flex justify-between">
@@ -236,7 +236,7 @@ export default function RidesList({ initialRides = [], isLoading = false }: Ride
               </span> */}
               <span>{filteredRides.length} trajet(s) disponible(s)</span>
             </div>
-            <ul className="w-full flex flex-col gap-4 *:list-none max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-hidden">
+            <ul className="w-full flex flex-col gap-4 *:list-none max-h-screen lg:max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-hidden">
               {isLoading ? (
                 <Loader />
               ) : filteredRides && filteredRides.length > 0 ? (
