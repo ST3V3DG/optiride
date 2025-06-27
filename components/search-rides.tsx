@@ -10,6 +10,7 @@ import { SearchParams, SearchRidesProps } from "@/lib/types";
 import { DatePicker } from "./date-picker";
 import Loader from "@/components/loader";
 import { toast } from "sonner";
+import { IconReload } from "@tabler/icons-react";
 
 export default function SearchRides({
   onSearch,
@@ -94,6 +95,23 @@ export default function SearchRides({
     onSearch(searchParams);
   };
 
+  // Gestion de l'annulatio du formulaire
+  const handleReset = () => {
+    setDepartureId(null);
+    setArrivalId(null);
+    setDate(new Date());
+    setSeats(1);
+    onSearch({
+      departure_id: null,
+      arrival_id: null,
+      date: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}-${String(date.getDate()).padStart(2, "0")}`,
+      seats,
+    });
+  };
+
   return (
     <div className="md:fixed md:top-16 py-4 w-full border-b backdrop-blur-3xl -z-1 md:z-1000 bg-background/50">
       <form
@@ -136,6 +154,21 @@ export default function SearchRides({
             <>
               <Search className="mr-0.5" />
               <span className="text-sm">Rechercher</span>
+            </>
+          )}
+        </Button>
+        <Button
+          className="w-full md:w-32 cursor-pointer dark:text-white"
+          type="reset"
+          variant="outline"
+          disabled={isLoading}
+          onClick={handleReset}>
+          {isLoading ? (
+            <Loader size="sm" />
+          ) : (
+            <>
+              <IconReload className="mr-0.5" />
+              <span className="text-sm">Reinitialiser</span>
             </>
           )}
         </Button>
