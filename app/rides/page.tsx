@@ -1,17 +1,16 @@
 import Header from "@/components/header";
 import Footer from "@/components/footer";
-import RidesClient from "./rides-client";
-import Loader from "@/components/loader";
+import RidesList from "@/components/rides-list";
 import { Suspense } from "react";
+import Loader from "@/components/loader";
 
 export default function Page() {
-
   return (
     <>
       <Header />
       <main className="flex-1">
         <Suspense fallback={<Loader />}>
-          <RidesClient />
+          <RidesList />
         </Suspense>
       </main>
       <Footer />

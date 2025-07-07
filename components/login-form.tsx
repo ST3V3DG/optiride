@@ -13,6 +13,7 @@ import Loader from "./loader";
 import { useMutation } from "@tanstack/react-query";
 import { apiClient } from "@/lib/axios";
 import { useSearchParams } from 'next/navigation';
+import { AxiosError } from "axios";
 
 export default function LoginForm({
   className,
@@ -20,7 +21,7 @@ export default function LoginForm({
 }: React.ComponentProps<"div">) {
 
   const searchParams = useSearchParams();
-  const returnTo = searchParams.get('returnTo') || '/dashboard';
+  const returnTo = searchParams.get('returnTo') || '/';
   const router = useRouter();
   const mutation = useMutation({
     mutationFn: (data: { email: string; password: string }) => {
@@ -35,12 +36,10 @@ export default function LoginForm({
       router.push(String(returnTo));
       router.refresh();
     },
-    onError: (error) => {
-      form.reset({email: "", password: ""});
-      toast.error("Error!", {
-        description: "Invalid credential.",
+    onError: (error: AxiosError<{ message: string }>) => {
+      toast.error("Operation failed", {
+        description: error.response?.data?.message,
       });
-      console.log(error);
     },
   });
 

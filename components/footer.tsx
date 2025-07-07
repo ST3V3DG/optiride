@@ -10,14 +10,14 @@ const links = [
         title: 'Trajets',
         href: '/rides',
     },
-    {
-        title: 'À propos',
-        href: '/about',
-    },
-    {
-        title: 'Contact',
-        href: '/contact',
-    },
+    // {
+    //     title: 'À propos',
+    //     href: '/about',
+    // },
+    // {
+    //     title: 'Contact',
+    //     href: '/contact',
+    // },
 ]
 
 export default function Footer() {

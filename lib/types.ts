@@ -95,6 +95,11 @@ export type UserFormProps = {
   operation: "create" | "update";
 }
 
+export type RideFormProps = {
+  data?: Ride;
+  operation: "create" | "update";
+}
+
 export type SearchRidesProps = {
   onSearch: (params: SearchParams) => void;
   locations: { id: number | null; name: string }[];

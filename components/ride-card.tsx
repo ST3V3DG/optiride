@@ -12,7 +12,10 @@ import Image from "next/image";
 import { Separator } from "./ui/separator";
 import Link from "next/link";
 
-export default function RideCard({ ride }: { ride: Ride }) {
+export default function RideCard({ ride }: { ride: Ride; }) {
+  
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+  
   return (
     <li>
       <Link href={`/rides/${ride.id}`} target="_blank">
@@ -65,7 +68,7 @@ export default function RideCard({ ride }: { ride: Ride }) {
                       width={500}
                       className="overflow-hidden rounded-full"
                       alt={String(ride.driver.name)}
-                      src={"/" + String(ride.driver.image)}
+                      src={`${API_BASE_URL}/storage/${String(ride.driver.image)}`}
                     />
                   ) : (
                     <User />

@@ -32,11 +32,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const user = query.data?.data;
 
-  // Determine if the user can view the "Users" link
-  // This assumes authClient.organization.checkRolePermission can access the current user's
-  // active organization role from its context/session.
-  // const canViewUsers = authClient.organization.checkRolePermission({ permissions: { userResource: ["read"] } });
-
   const navMainItems = [
     // Users item - conditional
     {

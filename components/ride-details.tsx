@@ -1,24 +1,32 @@
+"use client";
+
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import DangerZone from "./danger-zone";
 import NoData from "./no-data";
-import { RideWithNames } from "@/lib/types";
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "@/lib/axios";
 import { convertirHeureEnDate } from "@/lib/helpers";
 
-export default function RideDetails( { ride }: { ride: RideWithNames } ) {
+export default function RideDetails({ id }: { id: string; }) {
+  
+    const query = useQuery({
+      queryKey: ["ride"],
+      queryFn: () => apiClient.get(`rides/${id}`),
+    });
 
-  if (!ride) {
+  if (query.isError) {
     return <NoData />;
   }
 
-  const arrivalTime = ride.hour_of_arrival
-    ? convertirHeureEnDate(ride.hour_of_arrival)
+  const arrivalTime = query.data?.data?.data.hour_of_arrival
+    ? convertirHeureEnDate(query.data?.data?.data.hour_of_arrival)
     : new Date();
   const arrivalHour = String(arrivalTime.getHours()).padStart(2, "0");
   const arrivalMinute = String(arrivalTime.getMinutes()).padStart(2, "0");
 
-  const departureTime = ride.hour_of_departure
-    ? convertirHeureEnDate(ride.hour_of_departure)
+  const departureTime = query.data?.data?.data.hour_of_departure
+    ? convertirHeureEnDate(query.data?.data?.data.hour_of_departure)
     : new Date();
   const departureHour = String(departureTime.getHours()).padStart(2, "0");
   const departureMinute = String(departureTime.getMinutes()).padStart(2, "0");
@@ -34,12 +42,12 @@ export default function RideDetails( { ride }: { ride: RideWithNames } ) {
           <ul className="flex flex-col gap-4 justify-between">
             <li>
               <span className="mr-2 font-medium">Driver:</span>
-              <span className="capitalize">{ride.driver_name || "N/A"}</span>
+              <span className="capitalize">{query.data?.data?.data.driver.name || "N/A"}</span>
             </li>
             <li>
               <span className="mr-2 font-medium">Date:</span>
-              {ride.date
-                ? new Date(ride.date).toLocaleDateString("en-US", {
+              {query.data?.data?.data.date
+                ? new Date(query.data?.data?.data.date).toLocaleDateString("en-US", {
                     weekday: "long",
                     year: "numeric",
                     month: "long",
@@ -49,22 +57,22 @@ export default function RideDetails( { ride }: { ride: RideWithNames } ) {
             </li>
             <li>
               <span className="mr-2 font-medium">Departure:</span>
-              <span className="capitalize">{ride.departure_city || "N/A"}</span>
+              <span className="capitalize">{query.data?.data?.data.place_of_departure.name || "N/A"}</span>
               <span className="ml-2 text-sm text-muted-foreground">
-                ({ride.collection_point || "N/A"})
+                ({query.data?.data?.data.collection_point || "N/A"})
               </span>
             </li>
             <li>
               <span className="mr-2 font-medium">Arrival:</span>
-              <span className="capitalize">{ride.arrival_city || "N/A"}</span>
+              <span className="capitalize">{query.data?.data?.data.place_of_arrival.name || "N/A"}</span>
               <span className="ml-2 text-sm text-muted-foreground">
-                ({ride.drop_off_point || "N/A"})
+                ({query.data?.data?.data.drop_off_point || "N/A"})
               </span>
             </li>
             <li>
               <span className="mr-2 font-medium">Hour of departure:</span>
               <span className="capitalize">
-                {ride.hour_of_departure
+                {query.data?.data?.data.hour_of_departure
                   ? `${departureHour}h ${departureMinute}m`
                   : "N/A"}
               </span>
@@ -72,17 +80,17 @@ export default function RideDetails( { ride }: { ride: RideWithNames } ) {
             <li>
               <span className="mr-2 font-medium">Hour of arrival:</span>
               <span className="capitalize">
-                {ride.hour_of_arrival
+                {query.data?.data?.data.hour_of_arrival
                   ? `${arrivalHour}h ${arrivalMinute}m`
                   : "N/A"}
               </span>
             </li>
             <li>
               <span className="mr-2 font-medium">Duration:</span>
-              {ride.duration ? (
+              {query.data?.data?.data.duration ? (
                 <span className="capitalize">
-                  {String(Math.floor(ride.duration / 60)).padStart(2, "0")}h
-                  {String(ride.duration % 60).padStart(2, "0")}m
+                  {String(Math.floor(query.data?.data?.data.duration / 60)).padStart(2, "0")}h
+                  {String(query.data?.data?.data.duration % 60).padStart(2, "0")}m
                 </span>
               ) : (
                 "N/A"
@@ -90,18 +98,18 @@ export default function RideDetails( { ride }: { ride: RideWithNames } ) {
             </li>
             <li>
               <span className="mr-2 font-medium">Price:</span>
-              <span className="capitalize">{ride.price || "N/A"}</span>
+              <span className="capitalize">{query.data?.data?.data.price || "N/A"}</span>
             </li>
             <li>
               <span className="mr-2 font-medium">Available seats:</span>
               <span className="capitalize">
-                {ride.available_seats || "N/A"}
+                {query.data?.data?.data.available_seats || "N/A"}
               </span>
             </li>
           </ul>
         </CardContent>
       </Card>
-      <DangerZone id={String(ride.id)} collectionName="rides" />
+      <DangerZone id={String(query.data?.data?.data.id)} collectionName="rides" />
     </div>
   );
 }

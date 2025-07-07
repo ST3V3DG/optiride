@@ -74,11 +74,11 @@ export default function Page() {
           isLoading={citiesQuery.isPending || ridesQuery.isPending}
         />
       </Suspense>
-      <Hero />
+      <Hero className="bg-white dark:bg-background" />
       <Logos />
-      <Items />
+      <Items className="bg-white dark:bg-background" />
       <Stats />
-      <Pricing />
+      <Pricing className="bg-white dark:bg-background" />
       <CTA />
       <Footer />
     </>

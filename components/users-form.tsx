@@ -11,6 +11,7 @@ import { UserFormProps } from "@/lib/types";
 import { useMutation } from "@tanstack/react-query";
 import { apiClient } from "@/lib/axios";
 import { Label } from "./ui/label";
+import { AxiosError } from "axios";
 
 export default function UsersForm({ data, operation }: UserFormProps) {
   const [showPassword, setShowPassword] = useState(false);
@@ -33,27 +34,9 @@ export default function UsersForm({ data, operation }: UserFormProps) {
       // Reset form after successful creation
       form.reset();
     },
-    onError: (error) => {
-      console.error("Create user error:", error);
-
-      // Handle validation errors (422)
-      // if (error.response?.status === 422) {
-      //   const validationErrors = error.response.data.errors;
-      //   if (validationErrors) {
-      //     // Display specific validation errors
-      //     Object.entries(validationErrors).forEach(([field, messages]) => {
-      //       toast.error(`${field}: ${(messages as string[]).join(', ')}`);
-      //     });
-      //   } else {
-      //     toast.error("Validation failed. Please check your input.");
-      //   }
-      // } else {
-      //   toast.error("Error!", {
-      //     description: "User creation failed.",
-      //   });
-      // }
-      toast.error("Error!", {
-        description: "User creation failed.",
+    onError: (error: AxiosError<{ message: string }>) => {
+      toast.error("Operation failed", {
+        description: error.response?.data?.message,
       });
     },
   });
@@ -82,27 +65,9 @@ export default function UsersForm({ data, operation }: UserFormProps) {
         description: "User updated successfully.",
       });
     },
-    onError: (error) => {
-      console.error("Update user error:", error);
-
-      // Handle validation errors (422)
-      // if (error.response?.status === 422) {
-      //   const validationErrors = error.response.data.errors;
-      //   if (validationErrors) {
-      //     // Display specific validation errors
-      //     Object.entries(validationErrors).forEach(([field, messages]) => {
-      //       toast.error(`${field}: ${(messages as string[]).join(", ")}`);
-      //     });
-      //   } else {
-      //     toast.error("Validation failed. Please check your input.");
-      //   }
-      // } else {
-      //   toast.error("Error!", {
-      //     description: "User update failed.",
-      //   });
-      // }
-      toast.error("Error!", {
-        description: "User update failed.",
+    onError: (error: AxiosError<{ message: string }>) => {
+      toast.error("Operation failed", {
+        description: error.response?.data?.message,
       });
     },
   });
@@ -144,7 +109,7 @@ export default function UsersForm({ data, operation }: UserFormProps) {
           `Error ${operation === "create" ? "creating" : "updating"} user:`,
           error
         );
-        toast.error("Error!", {
+        toast.error("Operation failed", {
           description: "Something went wrong.",
         });
       }

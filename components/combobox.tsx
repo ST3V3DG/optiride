@@ -26,20 +26,18 @@ export function Combobox({
   value,
   setValue,
 }: {
-  collection: Array<{ id: number | null; label: string | null }> | undefined;
+  collection: Array<{ value: number | string | null; label: string | null }> | undefined;
   className?: string;
   placeholder?: string;
-  value: number | null | undefined;
-  setValue: React.Dispatch<
-    React.SetStateAction<number | null>
-  >;
+  value: number | string | null | undefined;
+  setValue: (value: number | string | null) => void;
 }) {
   const [open, setOpen] = React.useState(false);
 
   // Find the label for the currently selected value to display in the button
   const selectedLabel =
     value != null // Check if value is not null or undefined
-      ? collection?.find((item) => item.id === value)?.label ?? "Select item..." // Use ?? for fallback
+      ? collection?.find((item) => item.value === value)?.label ?? "Select item..." // Use ?? for fallback
       : placeholder;
 
   return (
@@ -60,8 +58,7 @@ export function Combobox({
       {/* Make PopoverContent width match the trigger */}
       <PopoverContent
         className="p-0 z-1000"
-        style={{ width: "var(--radix-popover-trigger-width)" }}
-      >
+        style={{ width: "var(--radix-popover-trigger-width)" }}>
         <Command>
           <CommandInput placeholder="Search item..." />
           <CommandList>
@@ -70,9 +67,9 @@ export function Combobox({
               {collection?.map(
                 (item) =>
                   // Ensure item and its properties are valid before rendering
-                  item && item.id != null && item.label != null ? (
+                  item && item.value != null && item.label != null ? (
                     <CommandItem
-                      key={item.id}
+                      key={item.value}
                       // *** CHANGE HERE: Use label for filtering/value ***
                       value={item.label}
                       onSelect={(currentLabel) => {
@@ -81,23 +78,22 @@ export function Combobox({
                           (i) => i.label === currentLabel
                         );
                         if (selectedItem) {
-                          setValue(selectedItem.id);
+                          setValue(selectedItem.value);
                         } else {
                           setValue(null); // Handle case where item not found (optional)
                         }
                         setOpen(false);
-                      }}
-                    >
+                      }}>
                       <Check
                         className={cn(
                           "mr-2 size-4",
                           // Compare selected value (ID) with item's ID
-                          value === item.id ? "opacity-100" : "opacity-0"
+                          value === item.value ? "opacity-100" : "opacity-0"
                         )}
                       />
                       {item.label}
                     </CommandItem>
-                  ) : null // Don't render item if id or label is null/undefined
+                  ) : null // Don't render item if value or label is null/undefined
               )}
             </CommandGroup>
           </CommandList>

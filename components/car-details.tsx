@@ -1,11 +1,20 @@
+"use client";
+
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import DangerZone from "./danger-zone";
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "@/lib/axios";
+import Loader from "./loader";
 import NoData from "./no-data";
-import { CarWithDriverName } from "@/lib/types";
 
-export default function CarDetails({ car }: { car: CarWithDriverName }) {
-  if (!car) {
+export default function CarDetails({ id }: { id: string }) {
+  const query = useQuery({
+    queryKey: ["car"],
+    queryFn: () => apiClient.get(`cars/${id}`),
+  });
+
+  if (query.isError) {
     return <NoData />;
   }
 
@@ -16,40 +25,58 @@ export default function CarDetails({ car }: { car: CarWithDriverName }) {
           <CardTitle>Car Information</CardTitle>
         </CardHeader>
         <Separator />
-        <CardContent>
-          <ul className="flex flex-col gap-4 justify-between pt-4">
-            <li>
-              <span className="mr-2 font-medium">Driver:</span>
-              <span className="capitalize">{car.driver_name || "N/A"}</span>
-            </li>
-            <li>
-              <span className="mr-2 font-medium">Brand:</span>
-              <span className="capitalize">{car.brand || "N/A"}</span>
-            </li>
-            <li>
-              <span className="mr-2 font-medium">Model:</span>
-              <span className="capitalize">{car.model || "N/A"}</span>
-            </li>
-            <li>
-              <span className="mr-2 font-medium">Year:</span>
-              <span className="capitalize">{car.year || "N/A"}</span>
-            </li>
-            <li>
-              <span className="mr-2 font-medium">Comfort:</span>
-              <span className="capitalize">{car.comfort || "N/A"}</span>
-            </li>
-            <li>
-              <span className="mr-2 font-medium">Registration:</span>
-              <span className="uppercase">{car.registration || "N/A"}</span>
-            </li>
-            <li>
-              <span className="mr-2 font-medium">Number of seats:</span>
-              <span className="capitalize">{car.available_seats || "N/A"}</span>
-            </li>
-          </ul>
-        </CardContent>
+        {query.isPending ? (
+          <Loader />
+        ) : (
+          <CardContent>
+            <ul className="flex flex-col gap-4 justify-between pt-4">
+              <li>
+                <span className="mr-2 font-medium">Driver:</span>
+                <span className="capitalize">
+                  {query.data?.data.data.driver.name || "N/A"}
+                </span>
+              </li>
+              <li>
+                <span className="mr-2 font-medium">Brand:</span>
+                <span className="capitalize">
+                  {query.data?.data.data.brand || "N/A"}
+                </span>
+              </li>
+              <li>
+                <span className="mr-2 font-medium">Model:</span>
+                <span className="capitalize">
+                  {query.data?.data.data.model || "N/A"}
+                </span>
+              </li>
+              <li>
+                <span className="mr-2 font-medium">Year:</span>
+                <span className="capitalize">
+                  {query.data?.data.data.year || "N/A"}
+                </span>
+              </li>
+              <li>
+                <span className="mr-2 font-medium">Comfort:</span>
+                <span className="capitalize">
+                  {query.data?.data.data.comfort || "N/A"}
+                </span>
+              </li>
+              <li>
+                <span className="mr-2 font-medium">Registration:</span>
+                <span className="uppercase">
+                  {query.data?.data.data.registration || "N/A"}
+                </span>
+              </li>
+              <li>
+                <span className="mr-2 font-medium">Number of seats:</span>
+                <span className="capitalize">
+                  {query.data?.data.data.available_seats || "N/A"}
+                </span>
+              </li>
+            </ul>
+          </CardContent>
+        )}
       </Card>
-      <DangerZone id={String(car.id)} collectionName="cars" />
+      <DangerZone id={String(query.data?.data.data.id)} collectionName="cars" />
     </div>
   );
 }

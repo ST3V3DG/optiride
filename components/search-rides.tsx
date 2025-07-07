@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Combobox } from "@/components/combobox";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Search } from "lucide-react";
 import { SearchParams, SearchRidesProps } from "@/lib/types";
 import { DatePicker } from "./date-picker";
@@ -24,10 +24,10 @@ export default function SearchRides({
   const dateParam = searchParams.get("date");
   const seatsParam = searchParams.get("seats");
 
-  const [departureId, setDepartureId] = useState<number | null>(
+  const [departureId, setDepartureId] = useState<number | string | null>(
     departureIdParam ? parseInt(departureIdParam) : null
   );
-  const [arrivalId, setArrivalId] = useState<number | null>(
+  const [arrivalId, setArrivalId] = useState<number | string | null>(
     arrivalIdParam ? parseInt(arrivalIdParam) : null
   );
   const [date, setDate] = useState<Date>(
@@ -36,6 +36,13 @@ export default function SearchRides({
   const [seats, setSeats] = useState<number>(
     seatsParam ? parseInt(seatsParam) : 1
   );
+
+  useEffect(() => {
+    setDepartureId(departureIdParam ? parseInt(departureIdParam) : null);
+    setArrivalId(arrivalIdParam ? parseInt(arrivalIdParam) : null);
+    setDate(dateParam ? new Date(dateParam) : new Date());
+    setSeats(seatsParam ? parseInt(seatsParam) : 1);
+  }, [searchParams, arrivalIdParam, dateParam, departureIdParam, seatsParam]);
 
   // Fonction de validation
   const validateSearch = (params: SearchParams) => {
@@ -53,18 +60,18 @@ export default function SearchRides({
     // Si locations n'est pas un tableau, retourne un tableau vide avec l'option par défaut
     if (!Array.isArray(locations)) {
       console.error("Locations is not an array:", locations);
-      return [{ id: null, label: "Sélectionner..." }];
+      return [{ value: null, label: "Sélectionner..." }];
     }
 
     return [
-      { id: null, label: "Sélectionner..." },
+      { value: null, label: "Sélectionner..." },
       ...locations
         .filter(
           (loc) =>
             loc && typeof loc === "object" && "id" in loc && "name" in loc
         )
         .map((loc) => ({
-          id: loc.id,
+          value: loc.id,
           label: loc.name || `Ville ${loc.id}`,
         })),
     ];
@@ -75,8 +82,8 @@ export default function SearchRides({
     e.preventDefault();
 
     const searchParams = {
-      departure_id: departureId,
-      arrival_id: arrivalId,
+      departure_id: Number(departureId),
+      arrival_id: Number(arrivalId),
       date: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
         2,
         "0"

@@ -5,7 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
-// import { useEffect } from "react";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { toast } from "sonner";
@@ -13,6 +12,7 @@ import { useRouter } from "next/navigation";
 import Loader from "./loader";
 import { useMutation } from "@tanstack/react-query";
 import { apiClient } from "@/lib/axios";
+import { AxiosError } from "axios";
 
 export default function RegisterForm({
   className,
@@ -43,27 +43,12 @@ export default function RegisterForm({
       });
       router.push("/login");
     },
-    onError: (error) => {
-      toast.error("Error!", {
-        description: "User registration failed.",
+    onError: (error: AxiosError<{ message: string }>) => {
+      toast.error("Operation failed", {
+        description: error.response?.data?.message,
       });
-      console.log(error);
     },
   });
-
-  // useEffect(() => {
-  //   if (mutation.isSuccess) {
-  //     toast.success("Success!", {
-  //       description: "User registered.",
-  //     });
-  //     router.push("/");
-  //   } else if (mutation.isError) {
-  //     toast.error("Error!", {
-  //       description: "User registration failed.",
-  //     });
-  //     console.log(mutation.error);
-  //   }
-  // }, [mutation.isSuccess, mutation.isError]);
 
   const form = useForm({
     defaultValues: {

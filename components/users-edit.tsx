@@ -14,29 +14,19 @@ export default function UserEdit({ id }: { id: string }) {
     queryFn: () => apiClient.get(`/users/${id}`),
   });
 
-  const user = query.data?.data.data;
-
-  console.log(user);
-
 
   return (
     <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-md md:min-h-min p-2 flex flex-col place-content-between gap-4">
-      {user ? (
-        <>
           <Card className="m-auto w-full max-w-96">
             <CardHeader>
               <CardTitle>Update user information</CardTitle>
             </CardHeader>
             <Separator />
             <CardContent>
-              <UsersForm data={user} operation="update" />
+              {query.isPending ? <Loader /> : <UsersForm data={query.data?.data.data} operation="update" />}
             </CardContent>
           </Card>
-          <DangerZone id={user.id} collectionName="users" />
-        </>
-      ) : (
-        <Loader />
-      )}
+          <DangerZone id={query.data?.data.data.id} collectionName="users" />
     </div>
   );
 }

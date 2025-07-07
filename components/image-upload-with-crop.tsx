@@ -12,19 +12,19 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import getCroppedImg, { urlToFile } from "@/lib/crop-image";
-import { RotateCcw, ImageUp, ZoomIn, ZoomOut } from "lucide-react";
+import { RotateCcw, ZoomIn, ZoomOut } from "lucide-react";
 import { toast } from "sonner";
 
 import { FileUpload, FileUploadRef } from "@/components/ui/file-upload";
 import Image from "next/image";
 
-interface ImageUploadWithCropProps {
+type ImageUploadWithCropProps = {
   onFileCropped: (file: File | null) => void;
   accept?: string;
   aspectRatio?: number;
   initialImagePreviewUrl?: string | null;
   circularCrop?: boolean;
-}
+};
 
 export function ImageUploadWithCrop({
   onFileCropped,
@@ -105,14 +105,16 @@ export function ImageUploadWithCrop({
       }
       // Also cleanup any cropper source if it was a blob/data URL
       // This is handled by the modal close handler more immediately, but good for unmount
-      // if (imageSrcForCropper && imageSrcForCropper.startsWith('blob:')) { URL.revokeObjectURL(imageSrcForCropper); }
+      if (imageSrcForCropper && imageSrcForCropper.startsWith("blob:")) {
+        URL.revokeObjectURL(imageSrcForCropper);
+      }
       // Data URLs don't need explicit revocation.
     };
-  }, [initialImagePreviewUrl]); // Re-run this effect if the initial server URL changes
+  }, [initialImagePreviewUrl, imageSrcForCropper]); // Re-run this effect if the initial server URL changes
 
   // Effect to handle cleanup of imageSrcForCropper when the modal closes
   // or when applyCrop sets it to null
-  useEffect(() => {
+  // useEffect(() => {
     // This cleanup fires BEFORE the state update commits in the next render cycle
     // or on unmount. If imageSrcForCropper WAS a blob, revoke it.
     // This is complex with re-cropping. Let's simplify the state flow.
@@ -121,7 +123,7 @@ export function ImageUploadWithCrop({
     // once it's no longer needed by the cropper.
     // If imageSrcForCropper was displayImagePreview blob (re-cropping),
     // that blob is managed by displayBlobUrlRef.
-  }, [imageSrcForCropper]); // Depend on imageSrcForCropper
+  // }, [imageSrcForCropper]); // Depend on imageSrcForCropper
 
   const handleFileSelectedByFileUpload = useCallback(
     (selectedFiles: File[]) => {
@@ -221,7 +223,7 @@ export function ImageUploadWithCrop({
     }
   };
 
-  const handleReCropOrEdit = () => {
+  /* const handleReCropOrEdit = () => {
     // Use the currently displayed image as the source for re-cropping
     // This works whether it's the initial server URL or a previously cropped blob URL
     const sourceToCrop = displayImagePreview;
@@ -240,7 +242,7 @@ export function ImageUploadWithCrop({
         description: "Impossible de trouver une image à rogner.",
       });
     }
-  };
+  }; */
 
   // Clears the selection entirely, reverting to initial state (or empty)
   const clearSelection = (notifyParent = true, change = false) => {
@@ -250,11 +252,10 @@ export function ImageUploadWithCrop({
       displayBlobUrlRef.current = null;
     }
 
-
     // Revoke the cropper source if it was a blob (less likely with simplified logic)
-    // if (imageSrcForCropper && imageSrcForCropper.startsWith('blob:')) {
-    //     URL.revokeObjectURL(imageSrcForCropper);
-    // }
+    if (imageSrcForCropper && imageSrcForCropper.startsWith("blob:")) {
+      URL.revokeObjectURL(imageSrcForCropper);
+    }
     // Data URLs (imageSrcForCropper from initial file select) don't need explicit revoke.
 
     setOriginalFileFromSelection(null);
@@ -266,8 +267,6 @@ export function ImageUploadWithCrop({
     setIsCroppingModalOpen(false); // Ensure modal is closed
     if (notifyParent) onFileCropped(null); // Notify parent that selection is cleared
     fileUploadComponentRef.current?.reset(); // Reset the underlying file input
-    
-    
   };
 
   // Handle modal closing explicitly (e.g., clicking outside or close button)
@@ -336,25 +335,25 @@ export function ImageUploadWithCrop({
             key={displayImagePreview} // Add key to force re-render on URL change
             src={displayImagePreview}
             alt="Prévisualisation"
-            className={`w-40 h-40 object-cover border-2 border-muted shadow-lg ${
+            className={`size-40 object-cover border-2 border-muted shadow-lg ${
               circularCrop ? "rounded-full" : "rounded-md"
             }`}
           />
           <div className="flex space-x-2">
-            <Button
+            {/* <Button
+              type="button"
               className="cursor-pointer"
               onClick={handleReCropOrEdit}
               variant="outline"
-              size="sm"
-            >
+              size="sm">
               <ImageUp className="mr-2 size-4" /> Rogner
-            </Button>
+            </Button> */}
             <Button
+              type="button"
               onClick={() => clearSelection(true, true)}
               variant="ghost"
               size="sm"
-              className="text-destructive hover:text-destructive cursor-pointer"
-            >
+              className="text-destructive hover:text-destructive cursor-pointer">
               <RotateCcw className="mr-2 size-4" /> Changer
             </Button>
           </div>
@@ -371,10 +370,12 @@ export function ImageUploadWithCrop({
 
       {isCroppingModalOpen && imageSrcForCropper && (
         <CropDialog
+          aria-describedby="crop-dialog"
           open={isCroppingModalOpen}
-          onOpenChange={handleCroppingModalOpenChange}
-        >
-          <CropDialogContent className="sm:max-w-[90vw] md:max-w-[70vw] lg:max-w-[600px] h-[75vh] flex flex-col p-0">
+          onOpenChange={handleCroppingModalOpenChange}>
+          <CropDialogContent
+            aria-describedby="crop-dialog"
+            className="sm:max-w-[90vw] md:max-w-[70vw] lg:max-w-[600px] h-[75vh] flex flex-col p-0">
             <CropDialogHeader className="p-4 border-b">
               <CropDialogTitle>Rogner votre image</CropDialogTitle>
             </CropDialogHeader>
@@ -413,13 +414,16 @@ export function ImageUploadWithCrop({
             </div>
             <CropDialogFooter className="p-4 border-t gap-2">
               <Button
+                type="button"
                 className="cursor-pointer"
                 variant="outline"
-                onClick={() => handleCroppingModalOpenChange(false)}
-              >
+                onClick={() => handleCroppingModalOpenChange(false)}>
                 Annuler
               </Button>
-              <Button className="cursor-pointer text-white" onClick={applyCrop}>
+              <Button
+                type="button"
+                className="cursor-pointer text-white"
+                onClick={applyCrop}>
                 Appliquer
               </Button>
             </CropDialogFooter>

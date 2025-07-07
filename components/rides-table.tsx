@@ -1,31 +1,40 @@
-// "use client"
+"use client";
 
-// import { DataTable } from "@/app/dashboard/rides/data-table";
-// import { getColumns } from "@/app/dashboard/rides/columns";
-// import { Card, CardContent } from "@/components/ui/card";
-// import NoData from "./no-data";
-// import { useState } from "react";
-// import { type RideWithNames } from "@/lib/types";
+import { DataTable } from "@/app/dashboard/rides/data-table";
+import { getColumns } from "@/app/dashboard/rides/columns";
+import { Card, CardContent } from "@/components/ui/card";
+import NoData from "./no-data";
+import { useEffect, useState } from "react";
+import { type Ride } from "@/lib/types";
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "@/lib/axios";
+import Loader from "./loader";
 
-// interface RidesTableProps {
-//   initialRides: RideWithNames[];
-// }
+export default function RidesTable() {
+  const ridesQuery = useQuery({
+    queryKey: ["rides"],
+    queryFn: () => apiClient.get("/rides"),
+  });
 
-// export default function RidesTable({ initialRides }: RidesTableProps) {
-//   const [data, setData] = useState<RideWithNames[]>(initialRides);
+  const [data, setData] = useState<Ride[]>([]);
 
-//   if (!data || data.length === 0) {
-//     return <NoData />;
-//   }
+  useEffect(() => {
+    if (ridesQuery.isSuccess) setData(ridesQuery.data?.data?.data || []);
+  }, [ridesQuery.data?.data?.data, ridesQuery.isSuccess]);
 
-//   return (
-//     <Card>
-//       <CardContent className="p-4">
-//         <DataTable
-//           columns={getColumns(setData)}
-//           data={data}
-//         />
-//       </CardContent>
-//     </Card>
-//   );
-// }
+  if (ridesQuery.isError) {
+    return <NoData />;
+  }
+
+  return (
+    <Card>
+      <CardContent className="p-4">
+        {ridesQuery.isPending ? (
+          <Loader />
+        ) : (
+          <DataTable columns={getColumns(setData)} data={data} />
+        )}
+      </CardContent>
+    </Card>
+  );
+}
